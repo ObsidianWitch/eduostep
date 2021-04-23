@@ -3,7 +3,7 @@
 ## Virtualization
 
 - [x] 01 [Abstraction: Processes](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf)
-- [ ] [Process API](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf)
+- [x] 02 [Process API](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf)
 - [ ] [Direct Execution](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-mechanisms.pdf)
 - [ ] [Scheduling Basics](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf)
 - [ ] [MLFQ Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf)
