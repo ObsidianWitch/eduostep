@@ -6,14 +6,33 @@
 #include <time.h> // clock_getres(), clock_gettime()
 #include <sched.h> // sched_setaffinity()
 
-// #define NDEBUG
+#define NDEBUG
 #ifdef NDEBUG
     #define debug_printf(...)
 #else
     #define debug_printf printf
 #endif
 
-void errexit(char* msg) { perror(msg); exit(EXIT_FAILURE); }
+void errexit(char* msg) {
+    perror(msg);
+    exit(EXIT_FAILURE);
+}
+
+struct timespec gettime(clockid_t clock_id) {
+    struct timespec ts;
+    if (clock_gettime(clock_id, &ts) < 0) {
+        errexit("clock_gettime");
+    }
+    return ts;
+}
+
+// Return ta - tb in nanoseconds.
+long difftime2ns(struct timespec ta, struct timespec tb) {
+    return (ta.tv_nsec - tb.tv_nsec)
+         + (ta.tv_sec - tb.tv_sec) * 1000000000UL;
+}
+
+// ---
 
 // Retrieve and print CLOCK_PROCESS_CPUTIME_ID resolution.
 void clock_resolution() {
@@ -25,33 +44,27 @@ void clock_resolution() {
         resolution.tv_sec, resolution.tv_nsec);
 }
 
-// Repeatedly call a simple system call (0B read) & time how long it takes.
+// Repeatedly call a simple system call (0B read) & return the average execution
+// time of this syscall in nanoseconds.
 // Note: "Applications should use the clock_gettime() function instead of the
 // obsolescent gettimeofday() function." -man 3p gettimeofday
-void time_syscall(size_t n) {
-    struct timespec ts1;
-    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts1) < 0) {
-        errexit("clock_gettime 1");
-    }
+long time_syscall(size_t n) {
+    struct timespec ts1 = gettime(CLOCK_PROCESS_CPUTIME_ID);
     for (size_t i = 0 ; i < n ; ++i) {
         read(STDIN_FILENO, NULL, 0);
     }
-    struct timespec ts2;
-    if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts2) < 0) {
-        errexit("clock_gettime 2");
-    }
+    struct timespec ts2 = gettime(CLOCK_PROCESS_CPUTIME_ID);
 
-    ts2.tv_sec -= ts1.tv_sec;
-    ts2.tv_nsec -= ts1.tv_nsec;
-    ts2.tv_nsec += (ts2.tv_sec * 1000000000UL);
-    printf("time syscall: %ld ns\n", ts2.tv_nsec / n);
+    long syscall_nsec = difftime2ns(ts2, ts1) / n;
+    printf("time syscall: %ld ns\n", syscall_nsec);
+    return syscall_nsec;
 }
 
 // Time context switch between two processes on one processor by using blocking
 // inter-process communication.
 // parent -1-pipes[0]-0-> child
 // child  -1-pipes[1]-0-> parent
-void time_ctxswitch(size_t n) {
+void time_ctxswitch(size_t n, long syscall_nsec) {
     // prepare pipes for two-way IPC between parent and child
     int pipes[2][2];
     if (pipe(pipes[0]) < 0) { errexit("pipe0"); }
@@ -93,22 +106,29 @@ void time_ctxswitch(size_t n) {
 
         // blocking ipc loop to trigger context switch
         char buffer;
+        struct timespec ts1 = gettime(CLOCK_PROCESS_CPUTIME_ID);
         for (size_t i = 0 ; i < n ; ++i) {
             write(pipes[0][1], "p", 1);
             read(pipes[1][0], &buffer, 1);
             debug_printf("[p][i=%lu] %c\n", i, buffer);
         }
+        struct timespec ts2 = gettime(CLOCK_PROCESS_CPUTIME_ID);
 
         // close pipes
         if (close(pipes[0][1]) < 0) { errexit("[p] close pipe01"); }
         if (close(pipes[1][0]) < 0) { errexit("[p] close pipe10"); }
+
+        // result
+        long ctxsw_nsec = (difftime2ns(ts2, ts1) / n)
+                        - (2 * syscall_nsec);
+        printf("time ctxsw: %ld ns\n", ctxsw_nsec);
     }
 }
 
 // Objectives: measure the costs of a system call and context switch.
 int main(int argc, char *argv[]) {
     clock_resolution();
-    time_syscall(1000000);
-    time_ctxswitch(5);
+    long syscall_nsec = time_syscall(1000000);
+    time_ctxswitch(100000, syscall_nsec);
     return EXIT_SUCCESS;
 }
