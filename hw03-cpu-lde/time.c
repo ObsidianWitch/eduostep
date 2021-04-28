@@ -34,7 +34,7 @@ long difftime2ns(struct timespec ta, struct timespec tb) {
 
 // ---
 
-// Retrieve and print CLOCK_PROCESS_CPUTIME_ID resolution.
+// Retrieve and print CLOCK_PROCESS_CPUTIME_ID's resolution.
 void clock_resolution() {
     struct timespec resolution;
     if (clock_getres(CLOCK_PROCESS_CPUTIME_ID, &resolution) < 0) {
@@ -44,9 +44,9 @@ void clock_resolution() {
         resolution.tv_sec, resolution.tv_nsec);
 }
 
-// Repeatedly call a simple system call (0B read) & return the average execution
-// time of this syscall in nanoseconds.
-// Note: "Applications should use the clock_gettime() function instead of the
+// Repeatedly (`n`) call a simple system call (0B read) & return the average
+// execution time of this syscall in nanoseconds.
+// NB: "Applications should use the clock_gettime() function instead of the
 // obsolescent gettimeofday() function." -man 3p gettimeofday
 long time_syscall(size_t n) {
     struct timespec ts1 = gettime(CLOCK_PROCESS_CPUTIME_ID);
@@ -60,17 +60,41 @@ long time_syscall(size_t n) {
     return syscall_nsec;
 }
 
-// Time context switch between two processes on one processor by using blocking
-// inter-process communication.
-// parent -1-pipes[0]-0-> child
-// child  -1-pipes[1]-0-> parent
-void time_ctxswitch(size_t n, long syscall_nsec) {
+// Measure the time it takes to write and read a token `n` times through a pipe
+// on one process (no context switch).
+long time_pipe(size_t n) {
+    int pipefd[2];
+    if (pipe(pipefd) < 0) { errexit("pipe"); }
+
+    char buffer;
+    struct timespec ts1 = gettime(CLOCK_PROCESS_CPUTIME_ID);
+    for (size_t i = 0 ; i < n ; ++i) {
+        write(pipefd[1], "p", 1);
+        read(pipefd[0], &buffer, 1);
+    }
+    struct timespec ts2 = gettime(CLOCK_PROCESS_CPUTIME_ID);
+
+    // close pipes
+    if (close(pipefd[0]) < 0) { errexit("close pipefd0"); }
+    if (close(pipefd[1]) < 0) { errexit("close pipefd1"); }
+
+    // result
+    long pipe_nsec = difftime2ns(ts2, ts1) / n;
+    printf("time pipe: %ld ns\n", pipe_nsec);
+    return pipe_nsec;
+}
+
+// Time context switch between two processes on one processor by using a loop of
+// blocking ipc.
+void time_ctxswitch(size_t n, long syscall_nsec, long pipe_nsec) {
     // prepare pipes for two-way IPC between parent and child
+    // parent -1-pipes[0]-0-> child
+    // child  -1-pipes[1]-0-> parent
     int pipes[2][2];
     if (pipe(pipes[0]) < 0) { errexit("pipe0"); }
     if (pipe(pipes[1]) < 0) { errexit("pipe1"); }
 
-    // run current thread on cpu 0, will be inherited by child process
+    // run current thread on cpu 0
     // "A child created via fork(2) inherits its parent's CPU affinity mask."
     // -man 2 sched_getaffinity
     cpu_set_t cpuset;
@@ -118,10 +142,18 @@ void time_ctxswitch(size_t n, long syscall_nsec) {
         if (close(pipes[0][1]) < 0) { errexit("[p] close pipe01"); }
         if (close(pipes[1][0]) < 0) { errexit("[p] close pipe10"); }
 
-        // result
-        long ctxsw_nsec = (difftime2ns(ts2, ts1) / n)
-                        - (2 * syscall_nsec);
-        printf("time ctxsw: %ld ns\n", ctxsw_nsec);
+        // results
+        /// estimate duration of one iteration of the ipc loop from the parent
+        long ipc_nsec = difftime2ns(ts2, ts1) / n;
+        printf("time ctxsw (w/ overhead): %ld ns\n", ipc_nsec);
+
+        /// estimate duration of context switch w/o 2 syscalls overhead
+        long ctxsw1_nsec = ipc_nsec - (2 * syscall_nsec);
+        printf("time ctxsw (w/o 2*syscall overhead): %ld ns\n", ctxsw1_nsec);
+
+        /// estimate duration of context switch w/o pipe overhead
+        long ctxsw2_nsec = ipc_nsec - pipe_nsec;
+        printf("time ctxsw (w/o pipe overhead): %ld ns\n", ctxsw2_nsec);
     }
 }
 
@@ -129,6 +161,7 @@ void time_ctxswitch(size_t n, long syscall_nsec) {
 int main(int argc, char *argv[]) {
     clock_resolution();
     long syscall_nsec = time_syscall(1000000);
-    time_ctxswitch(100000, syscall_nsec);
+    long pipe_nsec = time_pipe(1000000);
+    time_ctxswitch(1000000, syscall_nsec, pipe_nsec);
     return EXIT_SUCCESS;
 }
