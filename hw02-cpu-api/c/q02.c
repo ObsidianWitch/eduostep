@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <unistd.h> // fork()
 #include <fcntl.h> // open()
-#include <err.h> // err()
 #include <string.h> // strlen()
+#include "common.h" // error(), error_if()
 
 // Q2. Write a program that opens a file (with the open() system call) and then
 // calls fork() to create a new process. Can both the child and parent access
@@ -17,18 +17,18 @@
 // If both processes write concurrently, the output will be non-deterministic.
 int main(int argc, char *argv[]) {
     int fd = open("out/q02.out", O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
-    if (fd < 0) { err(EXIT_FAILURE, "open"); }
+    error_if(fd < 0, "open");
 
     pid_t cpid = fork();
-    if (cpid < 0) { err(EXIT_FAILURE, "fork"); }
+    error_if(cpid < 0, "fork");
 
     char *str = (cpid == 0) ? "parent " : "child ";
     size_t len = strlen(str);
     for (uint i = 0; i < 100; i++) {
-        if (write(fd, str, len) < 0) { err(EXIT_FAILURE, "write"); }
+        error_if(write(fd, str, len) < 0, "write");
     }
 
-    if (close(fd) < 0) { err(EXIT_FAILURE, "close"); }
+    error_if(close(fd) < 0, "close");
 
     return EXIT_SUCCESS;
 }

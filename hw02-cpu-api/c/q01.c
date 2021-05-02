@@ -1,6 +1,7 @@
 #include <stdlib.h>
-#include <stdio.h> // printf(), perror()
+#include <stdio.h> // printf()
 #include <unistd.h> // fork()
+#include "common.h" // error(), error_if()
 
 // Q1. Write a program that calls fork(). Before calling fork(), have the main
 // process access a variable (e.g., x) and set its value to something (e.g.,
@@ -14,8 +15,7 @@ int main(int argc, char *argv[]) {
     int x = 100;
     pid_t cpid = fork();
     if (cpid < 0) { // error
-        perror("fork");
-        exit(EXIT_FAILURE);
+        error("fork");
     } else if (cpid == 0) { // child
         printf("child: x=%d\n", x); // child: x=100
         x += 1;

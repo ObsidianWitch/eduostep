@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <unistd.h> // fork(), exec()
-#include <err.h> // err()
+#include "common.h" // error(), error_if()
 
 // Q4. Write a program that calls fork() and then calls some form of exec() to
 // run the program /bin/ls. See if you can try all of the variants of exec(),
@@ -17,10 +17,10 @@
 int main(int argc, char *argv[]) {
     pid_t cpid = fork();
     if (cpid < 0) { // error
-        err(EXIT_FAILURE, "fork");
+        error("fork");
     } else if (cpid == 0) { // child
         execlp("ls", "ls", "-l", (char *) NULL);
-        err(EXIT_FAILURE, "execlp");
+        error("execlp");
     }
     return EXIT_SUCCESS;
 }

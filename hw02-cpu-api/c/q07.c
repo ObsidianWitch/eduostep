@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h> // printf()
 #include <unistd.h> // fork()
-#include <err.h> // err()
+#include "common.h" // error(), error_if()
 
 // Q7. Write a program that creates a child process, and then in the child
 // closes standard output (STDOUT FILENO). What happens if the child calls
@@ -13,9 +13,9 @@
 int main(int argc, char *argv[]) {
     pid_t cpid = fork();
     if (cpid < 0) { // error
-        err(EXIT_FAILURE, "fork");
+        error("fork");
     } else if (cpid == 0) { // child
-        if (close(STDOUT_FILENO) < 0) { perror("close"); }
+        error_if (close(STDOUT_FILENO) < 0, "close");
         printf("child\n");
     } else { // parent
         printf("parent\n");

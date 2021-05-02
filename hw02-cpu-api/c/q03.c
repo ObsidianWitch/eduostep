@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h> // printf()
 #include <unistd.h> // getpid(), getppid(), fork(), pause()
-#include <err.h> // err()
 #include <signal.h> // sigaction()
+#include "common.h" // error(), error_if()
 
 void sigusr1_handler(int signum) {}
 
@@ -14,19 +14,17 @@ void sigusr1_handler(int signum) {}
 // A. It's possible to do this without wait() by using signal() or sigaction().
 int main(int argc, char *argv[]) {
     struct sigaction action = { .sa_handler=sigusr1_handler };
-    if (sigaction(SIGUSR1, &action, NULL) < 0) {
-        err(EXIT_FAILURE, "sigaction");
-    }
+    error_if(sigaction(SIGUSR1, &action, NULL) < 0, "sigaction");
 
     pid_t cpid = fork();
     if (cpid < 0) { // error
-        err(EXIT_FAILURE, "fork");
+        error("fork");
     } else if (cpid == 0) { // child
-        printf("hello %d\n", getpid());
-        kill(getppid(), SIGUSR1);
+        printf("child %d: hello\n", getpid());
+        error_if(kill(getppid(), SIGUSR1) < 0, "kill");
     } else { // parent
         pause(); // sleep until a **handled** signal is delivered
-        printf("goodbye %d\n", getpid());
+        printf("parent %d: goodbye\n", getpid());
     }
     return EXIT_SUCCESS;
 }
