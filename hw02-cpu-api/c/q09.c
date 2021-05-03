@@ -43,6 +43,8 @@ int main(int argc, char *argv[]) {
     // parent
     error_if(close(pipefd[0]) < 0, "close");
     error_if(close(pipefd[1]) < 0, "close");
+    /// simulate shell waiting for its current command to finish executing
+    /// before executing the next one
     error_if(waitpid(cpid_writer, NULL, 0) < 0, "waitpid");
     error_if(waitpid(cpid_reader, NULL, 0) < 0, "waitpid");
 

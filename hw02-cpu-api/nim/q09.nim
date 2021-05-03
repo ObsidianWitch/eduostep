@@ -1,5 +1,8 @@
 #!/usr/bin/env -S nim r --gc:arc
 
+# OwnQ09. Implement a pipe of two commands using pipe().
+# ps | grep --color --extended-regexp 'ps|grep|$'
+
 import os, posix, strformat
 import common
 
@@ -37,6 +40,8 @@ elif cpid_writer == 0: # child
 # parent
 raiseOsErrorIf close(pipefd[0]) < 0
 raiseOsErrorIf close(pipefd[1]) < 0
+# simulate shell waiting for its current command to finish executing
+# before executing the next one
 var wstatus: cint
 raiseOsErrorIf waitpid(cpid_writer, wstatus, 0) < 0
 raiseOsErrorIf waitpid(cpid_reader, wstatus, 0) < 0

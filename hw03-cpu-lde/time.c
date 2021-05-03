@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <stdio.h> // printf()
 #include <unistd.h> // read(), fork(), pipe(), close(), write(), read()
 #include <time.h> // clock_getres(), clock_gettime()
@@ -13,16 +14,16 @@
     #define debug_printf printf
 #endif
 
-void errexit(char* msg) {
-    perror(msg);
-    exit(EXIT_FAILURE);
+void error_if(bool failure, const char *msg) {
+    if(failure) {
+        perror(msg);
+        exit(EXIT_FAILURE);
+    }
 }
 
 struct timespec gettime(clockid_t clock_id) {
     struct timespec ts;
-    if (clock_gettime(clock_id, &ts) < 0) {
-        errexit("clock_gettime");
-    }
+    error_if(clock_gettime(clock_id, &ts) < 0, "clock_gettime");
     return ts;
 }
 
@@ -37,9 +38,8 @@ long difftime2ns(struct timespec ta, struct timespec tb) {
 // Retrieve and print CLOCK_PROCESS_CPUTIME_ID's resolution.
 void clock_resolution() {
     struct timespec resolution;
-    if (clock_getres(CLOCK_PROCESS_CPUTIME_ID, &resolution) < 0) {
-        errexit("clock_getres");
-    }
+    error_if(clock_getres(CLOCK_PROCESS_CPUTIME_ID, &resolution) < 0,
+             "clock_getres");
     printf("clock resolution: %ld.%09ld s\n",
         resolution.tv_sec, resolution.tv_nsec);
 }
@@ -64,7 +64,7 @@ long time_syscall(size_t n) {
 // on one process (no context switch).
 long time_pipe(size_t n) {
     int pipefd[2];
-    if (pipe(pipefd) < 0) { errexit("pipe"); }
+    error_if(pipe(pipefd) < 0, "pipe");
 
     char buffer;
     struct timespec ts1 = gettime(CLOCK_PROCESS_CPUTIME_ID);
@@ -75,8 +75,8 @@ long time_pipe(size_t n) {
     struct timespec ts2 = gettime(CLOCK_PROCESS_CPUTIME_ID);
 
     // close pipes
-    if (close(pipefd[0]) < 0) { errexit("close pipefd0"); }
-    if (close(pipefd[1]) < 0) { errexit("close pipefd1"); }
+    error_if(close(pipefd[0]) < 0, "close pipefd0");
+    error_if(close(pipefd[1]) < 0, "close pipefd1");
 
     // result
     long pipe_nsec = difftime2ns(ts2, ts1) / n;
@@ -91,8 +91,8 @@ void time_ctxswitch(size_t n, long syscall_nsec, long pipe_nsec) {
     // parent -1-pipes[0]-0-> child
     // child  -1-pipes[1]-0-> parent
     int pipes[2][2];
-    if (pipe(pipes[0]) < 0) { errexit("pipe0"); }
-    if (pipe(pipes[1]) < 0) { errexit("pipe1"); }
+    error_if(pipe(pipes[0]) < 0, "pipe0");
+    error_if(pipe(pipes[1]) < 0, "pipe1");
 
     // run current thread on cpu 0
     // "A child created via fork(2) inherits its parent's CPU affinity mask."
@@ -100,17 +100,16 @@ void time_ctxswitch(size_t n, long syscall_nsec, long pipe_nsec) {
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(0, &cpuset);
-    if (sched_setaffinity(0, sizeof(cpuset), &cpuset) < 0) {
-        errexit("[c] sched_setaffinity");
-    }
+    error_if(sched_setaffinity(0, sizeof(cpuset), &cpuset) < 0,
+             "[c] sched_setaffinity");
 
     pid_t cpid = fork();
     if (cpid < 0) { // error
-        errexit("fork");
+        error_if(true, "fork");
     } else if (cpid == 0) { // child
         // close unused pipes
-        if (close(pipes[0][1]) < 0) { errexit("[c] close pipe01"); }
-        if (close(pipes[1][0]) < 0) { errexit("[c] close pipe10"); }
+        error_if(close(pipes[0][1]) < 0, "[c] close pipe01");
+        error_if(close(pipes[1][0]) < 0, "[c] close pipe10");
 
         // blocking ipc loop to trigger context switch
         char buffer;
@@ -121,12 +120,12 @@ void time_ctxswitch(size_t n, long syscall_nsec, long pipe_nsec) {
         }
 
         // close pipes
-        if (close(pipes[0][0]) < 0) { errexit("[c] close pipe00"); }
-        if (close(pipes[1][1]) < 0) { errexit("[c] close pipe11"); }
+        error_if(close(pipes[0][0]) < 0, "[c] close pipe00");
+        error_if(close(pipes[1][1]) < 0, "[c] close pipe11");
     } else { // parent
         // close unused pipes
-        if (close(pipes[0][0]) < 0) { errexit("[p] close pipe00"); }
-        if (close(pipes[1][1]) < 0) { errexit("[p] close pipe11"); }
+        error_if(close(pipes[0][0]) < 0, "[p] close pipe00");
+        error_if(close(pipes[1][1]) < 0, "[p] close pipe11");
 
         // blocking ipc loop to trigger context switch
         char buffer;
@@ -139,8 +138,8 @@ void time_ctxswitch(size_t n, long syscall_nsec, long pipe_nsec) {
         struct timespec ts2 = gettime(CLOCK_PROCESS_CPUTIME_ID);
 
         // close pipes
-        if (close(pipes[0][1]) < 0) { errexit("[p] close pipe01"); }
-        if (close(pipes[1][0]) < 0) { errexit("[p] close pipe10"); }
+        error_if(close(pipes[0][1]) < 0, "[p] close pipe01");
+        error_if(close(pipes[1][0]) < 0, "[p] close pipe10");
 
         // results
         /// estimate duration of one iteration of the ipc loop from the parent
