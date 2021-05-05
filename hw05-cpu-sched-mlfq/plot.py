@@ -29,4 +29,7 @@ for priority, queue in queues.items():
                          yrange    = (priority, 1),
                          facecolor = list(colors.TABLEAU_COLORS.values())[ijob])
 
-pyplot.show()
+if sys.stdout.isatty():
+    pyplot.show()
+else:
+    pyplot.savefig(sys.stdout.buffer)

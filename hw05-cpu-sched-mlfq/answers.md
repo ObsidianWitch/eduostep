@@ -109,5 +109,12 @@ $ ./mlfq.py --numQueues=1 --iobump --jlist=0,50,0:0,25,13 -c
 > Bonus. Implement a tool to plot the results of `./mlfq.py`.
 
 ```sh
+# display figure in a new window
 $ ./mlfq.py --jlist=0,200,0 -c | ./plot.py
+
+# display figure in current kitty terminal
+$ ./mlfq.py --jlist=0,200,0 -c | ./plot.py | kitty +kitten icat
+
+# save figure to png file
+$ ./mlfq.py --jlist=0,200,0 -c | ./plot.py > out.png
 ```
