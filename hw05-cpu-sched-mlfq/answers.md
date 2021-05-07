@@ -13,8 +13,8 @@
     OPTIONS stayAfterIO False
     OPTIONS iobump False
 
-    Job  0: startTime   0 - runTime   8 - ioFreq   0
-    Job  1: startTime   0 - runTime   4 - ioFreq   0
+    Job  0: startTime   0 - runTime   84 - ioFreq   0
+    Job  1: startTime   0 - runTime   42 - ioFreq   0
 
     * job 0: time:10/84 allotment:10/10 priority:1->0
     * job 1: time:10/42 allotment:10/10 priority:1->0
@@ -36,22 +36,22 @@
 
 2. How would you run the scheduler to reproduce each of the examples in the chapter?
 
-    * figure 8.2: Long-running Job Over Time: `./mlfq.py --jlist=0,200,0 -c` [[plot]](q22.png)
-
-    * figure 8.3: Along Came An Interactive Job: `./mlfq.py --jlist=0,180,0:100,20,0 -c` [[plot]](q23.png)
-
-    * figure 8.4: A Mixed I/O-intensive and CPU-intensive Workload: `./mlfq.py --stay --jlist=0,175,0:50,25,1 -c` [[plot]](q24.png)
-
-    * figure 8.5.a: Without Priority Boost:
-    `./mlfq.py --iotime=2 --stay --jlist=0,175,0:100,50,2:100,50,2 -c` [[plot]](q25a.png)
-
-    * figure 8.5.b: With Priority Boost: `./mlfq.py --boost=50 --iotime=2 --stay --jlist=0,175,0:100,50,2:100,50,2 -c` [[plot]](q25b.png)
-
-    * figure 8.6.a: Without Gaming Tolerance: ./mlfq.py --iotime=1 --stay --jlist=0,175,0:80,90,9 -c [[plot]](q26a.png)
-
-    * figure 8.6.b: With Gaming Tolerance: `./mlfq.py --iotime=1 --jlist=0,175,0:80,90,9 -c` [[plot]](q26b.png)
-
-    * figure 8.7: Lower Priority, Longer Quanta: `./mlfq.py --allotment=2 --quantumList=10,20,40 --jlist=0,140,0:0,140,0 -c` [[plot]](q27.png)
+    * figure 8.2: Long-running Job Over Time [[plot]](q22.png)  
+    `./mlfq.py --jlist=0,200,0 -c`
+    * figure 8.3: Along Came An Interactive Job [[plot]](q23.png)  
+    `./mlfq.py --jlist=0,180,0:100,20,0 -c`
+    * figure 8.4: A Mixed I/O-intensive and CPU-intensive Workload [[plot]](q24.png)  
+    `./mlfq.py --stay --jlist=0,175,0:50,25,1 -c`
+    * figure 8.5.a: Without Priority Boost [[plot]](q25a.png)  
+    `./mlfq.py --iotime=2 --stay --jlist=0,175,0:100,50,2:100,50,2 -c`
+    * figure 8.5.b: With Priority Boost [[plot]](q25b.png)  
+    `./mlfq.py --boost=50 --iotime=2 --stay --jlist=0,175,0:100,50,2:100,50,2 -c`
+    * figure 8.6.a: Without Gaming Tolerance: [[plot]](q26a.png)  
+    ./mlfq.py --iotime=1 --stay --jlist=0,175,0:80,90,9 -c
+    * figure 8.6.b: With Gaming Tolerance [[plot]](q26b.png)  
+    `./mlfq.py --iotime=1 --jlist=0,175,0:80,90,9 -c`
+    * figure 8.7: Lower Priority, Longer Quanta [[plot]](q27.png)  
+    `./mlfq.py --allotment=2 --quantumList=10,20,40 --jlist=0,140,0:0,140,0 -c`
 
 3. How would you configure the scheduler parameters to behave just like a round-robin scheduler?
 
