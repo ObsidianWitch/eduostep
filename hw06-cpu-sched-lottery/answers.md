@@ -13,7 +13,7 @@
 
 2. Now run with two specific jobs: each of length 10, but one (job 0) with just 1 ticket and the other (job 1) with 100 (e.g., -l 10:1,10:100). What happens when the number of tickets is so imbalanced? Will job 0 ever run before job 1 completes? How often? In general, what does such a ticket imbalance do to the behavior of lottery scheduling?
 
-    Job 1 will run in priority as intended by the ticket repartition. Job 0 has 10 opportunities to run at least once before job 1 completes, and it has 1% chance to run at any given step. What is the probability of job 0 not running before job 1 completes? It's `99%^10`. So job 0 has `100 * (1 - 99^10) ≃ 9.56%` chance of running at least once before job 1 completes. Ticket imbalance for jobs of the same length produces unfairness.
+    Job 1 will run in priority as intended by the ticket repartition. Job 0 has 10 opportunities to run at least once before job 1 completes, and it has 1% chance to run at any given step. What is the probability of job 0 not running before job 1 completes? It's `(99 / 100)^10`. So job 0 has `100 * (1 - (99 / 100)^10) ≃ 9.56%` chance of running at least once before job 1 completes. Ticket imbalance for jobs of the same length produces unfairness.
 
     ```sh
     for seed in {0..99}; do
