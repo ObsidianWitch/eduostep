@@ -18,7 +18,7 @@ for line in sys.stdin:
         queues[groups[2]][groups[1]].append(groups[0])
 
 # plot data
-# ref: https://matplotlib.org/2.0.2/examples/pylab_examples/broken_barh.html
+# ref: https://matplotlib.org/stable/gallery/lines_bars_and_markers/broken_barh.html
 figure, axis = pyplot.subplots()
 axis.set_yticks(list(queues.keys()))
 axis.set_xlabel("time (ms)")
