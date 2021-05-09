@@ -9,7 +9,7 @@
 - [x] 05 [MLFQ Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-mlfq.pdf)
 - [x] 06 [Lottery Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-lottery.pdf)
 - [ ] [Multiprocessor Scheduling](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-sched-multi.pdf)
-- [ ] [Abstraction: Address Spaces](http://www.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf)
+- [x] 07 [Abstraction: Address Spaces](http://www.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf)
 - [ ] [VM API](http://www.cs.wisc.edu/~remzi/OSTEP/vm-api.pdf)
 - [ ] [Relocation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-mechanism.pdf)
 - [ ] [Segmentation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf)
