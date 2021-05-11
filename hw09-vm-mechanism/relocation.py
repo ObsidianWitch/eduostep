@@ -100,6 +100,7 @@ if base + limit > psize:
 # now, need to generate virtual address trace
 #
 print('Virtual Address Trace')
+nvalidaddr = 0
 for i in range(0,options.num):
     vaddr = int(asize * random.random())
     if options.solve == False:
@@ -109,10 +110,13 @@ for i in range(0,options.num):
         if (vaddr >= limit):
             print('  VA %2d: 0x%08x (decimal: %4d) --> SEGMENTATION VIOLATION' % (i, vaddr, vaddr))
         else:
+            nvalidaddr += 1
             paddr = vaddr + base
             print('  VA %2d: 0x%08x (decimal: %4d) --> VALID: 0x%08x (decimal: %4d)' % (i, vaddr, vaddr, paddr, paddr))
 
 print('')
+
+print(f'Valid addresses: {nvalidaddr} {nvalidaddr / options.num}')
 
 if options.solve == False:
     print('For each virtual address, either write down the physical address it translates to')
