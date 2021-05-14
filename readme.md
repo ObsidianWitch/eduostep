@@ -12,7 +12,7 @@
 - [x] 07 [Abstraction: Address Spaces](http://www.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf)
 - [x] 08 [VM API](http://www.cs.wisc.edu/~remzi/OSTEP/vm-api.pdf)
 - [x] 09 [Relocation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-mechanism.pdf)
-- [ ] [Segmentation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf)
+- [x] 10 [Segmentation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf)
 - [ ] [Free Space](http://www.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf)
 - [ ] [Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf)
 - [ ] [TLBs](http://www.cs.wisc.edu/~remzi/OSTEP/vm-tlbs.pdf)
