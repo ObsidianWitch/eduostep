@@ -13,15 +13,15 @@
 - [x] 08 [VM API](http://www.cs.wisc.edu/~remzi/OSTEP/vm-api.pdf)
 - [x] 09 [Relocation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-mechanism.pdf)
 - [x] 10 [Segmentation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf)
-- [ ] [Free Space](http://www.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf)
+- [x] 11 [Free Space](http://www.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf)
 - [ ] [Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf)
 - [ ] [TLBs](http://www.cs.wisc.edu/~remzi/OSTEP/vm-tlbs.pdf)
 - [ ] [Multi-level Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-smalltables.pdf)
-[Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf)
+- [ ] [Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf)
 - [ ] [Paging Policy](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys-policy.pdf)
 - [ ] [Complete VM](http://www.cs.wisc.edu/~remzi/OSTEP/vm-complete.pdf)
 
-# Concurrency
+## Concurrency
 
 - [ ] [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
 - [ ] [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)
@@ -32,7 +32,7 @@
 - [ ] [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)
 - [ ] [Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)
 
-# Persistence
+## Persistence
 
 - [ ] [I/O Devices](http://www.cs.wisc.edu/~remzi/OSTEP/file-devices.pdf)
 - [ ] [Hard Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-disks.pdf)
