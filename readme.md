@@ -1,6 +1,8 @@
-# [Operating Systems: Three Easy Pieces: Homeworks](https://github.com/remzi-arpacidusseau/ostep-homework/)
+# Operating Systems: Three Easy Pieces: Assignments
 
-## Virtualization
+## [Homework](https://github.com/remzi-arpacidusseau/ostep-homework/)
+
+### Virtualization
 
 - [x] 01 [Abstraction: Processes](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-intro.pdf)
 - [x] 02 [Process API](http://www.cs.wisc.edu/~remzi/OSTEP/cpu-api.pdf)
@@ -21,7 +23,7 @@
 - [ ] [Paging Policy](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys-policy.pdf)
 - [ ] [Complete VM](http://www.cs.wisc.edu/~remzi/OSTEP/vm-complete.pdf)
 
-## Concurrency
+### Concurrency
 
 - [ ] [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
 - [ ] [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)
@@ -32,7 +34,7 @@
 - [ ] [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)
 - [ ] [Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)
 
-## Persistence
+### Persistence
 
 - [ ] [I/O Devices](http://www.cs.wisc.edu/~remzi/OSTEP/file-devices.pdf)
 - [ ] [Hard Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-disks.pdf)
@@ -47,3 +49,5 @@
 - [ ] [Distributed Intro](http://www.cs.wisc.edu/~remzi/OSTEP/dist-intro.pdf)
 - [ ] [NFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-nfs.pdf)
 - [ ] [AFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-afs.pdf)
+
+## [Projects](https://github.com/remzi-arpacidusseau/ostep-projects)
