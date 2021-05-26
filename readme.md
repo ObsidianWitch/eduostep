@@ -1,4 +1,4 @@
-# Operating Systems: Three Easy Pieces: Assignments
+# [Operating Systems: Three Easy Pieces](https://pages.cs.wisc.edu/~remzi/OSTEP/) - Assignments
 
 ## [Homework](https://github.com/remzi-arpacidusseau/ostep-homework/)
 
@@ -16,7 +16,7 @@
 - [x] 09 [Relocation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-mechanism.pdf)
 - [x] 10 [Segmentation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf)
 - [x] 11 [Free Space](http://www.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf)
-- [ ] [Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf)
+- [x] 12 [Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf)
 - [ ] [TLBs](http://www.cs.wisc.edu/~remzi/OSTEP/vm-tlbs.pdf)
 - [ ] [Multi-level Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-smalltables.pdf)
 - [ ] [Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf)
