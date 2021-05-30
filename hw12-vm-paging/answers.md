@@ -18,7 +18,7 @@
     1 Mi / 4 Ki = 256 page-table entries
     ```
 
-    As the address space grows, more pages-table entries are needed to cover the whole address space. As page size grows, less pages are needed to cover the address space and thus less page-table entries are needed. In general, `page-table size = address space size / page size`. Big pages lead to internal fragmentation.
+    As the address space grows, more pages-table entries are needed to cover the whole address space. As page size grows, less pages are needed to cover the address space and thus less page-table entries are needed. `page-table size = address space size / page size`. Big pages lead to internal fragmentation.
 
 2. Now let’s do some translations. Start with some small examples, and change the number of pages that are allocated to the address space with the -u flag. What happens as you increase the percentage of pages that are allocated in each address space?
 

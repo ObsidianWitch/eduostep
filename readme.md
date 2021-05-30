@@ -17,7 +17,7 @@
 - [x] 10 [Segmentation](http://www.cs.wisc.edu/~remzi/OSTEP/vm-segmentation.pdf)
 - [x] 11 [Free Space](http://www.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf)
 - [x] 12 [Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-paging.pdf)
-- [ ] [TLBs](http://www.cs.wisc.edu/~remzi/OSTEP/vm-tlbs.pdf)
+- [x] 13 [TLBs](http://www.cs.wisc.edu/~remzi/OSTEP/vm-tlbs.pdf)
 - [ ] [Multi-level Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-smalltables.pdf)
 - [ ] [Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf)
 - [ ] [Paging Policy](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys-policy.pdf)
