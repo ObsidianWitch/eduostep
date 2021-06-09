@@ -1,6 +1,6 @@
 1. With a linear page table, you need a single register to locate the page table, assuming that hardware does the lookup upon a TLB miss. How many registers do you need to locate a two-level page table? A three-level table?
 
-    Only one register (Page Directory Base Register, CR3 on x86) is required, the address of the highest/outermost level directory is stored in it. We don't need to store any other address in a register since we store the lower levels in regular pages which are referenced by the successive higher level's entries. The PDBR references the root node (the Page Directory) of a tree-like structure. (See OSTEP ch19, ch20 and https://lwn.net/Articles/253361/).
+    Only one register (Page Directory Base Register, CR3 on x86) is required, the address of the highest/outermost level directory is stored in it. We don't need to store any other address in a register since the PDBR references the root node (the Page Directory) of a tree-like structure. (See OSTEP ch19, ch20 and https://lwn.net/Articles/253361/).
 
 2. Use the simulator to perform translations given random seeds 0, 1, and 2, and check your answers using the -c flag. How many memory references are needed to perform each lookup?
 
@@ -77,4 +77,4 @@
 
 3. Given your understanding of how cache memory works, how do you think memory references to the page table will behave in the cache? Will they lead to lots of cache hits (and thus fast accesses?) Or lots of misses (and thus slow accesses)?
 
-    The pages constituting the page-table aren't accessed through their virtual address. They are accessed directly through the physical addresses of their entries (`PTEAddr = (PDE.PFN << SHIFT) + (PTIndex * sizeof(PTE))`), and thus there is no translation and no cache involved there.
+    The pages constituting the page-table aren't accessed through virtual addresses. They are accessed directly through the physical addresses of their entries (`PTEAddr = (PDE.PFN << SHIFT) + (PTIndex * sizeof(PTE))`), and thus there is no translation and no cache involved there.
