@@ -53,6 +53,7 @@ int main(int argc, char *argv[]) {
                 printf("loop %d in %.2f ms (bandwidth: %.2f MB/s)\n",
                     loop_count, 1000 * delta_time,
                     size_in_bytes / (1024.0*1024.0*delta_time));
+                fflush(stdout);
                 time_since_last_print = 0;
             }
 
