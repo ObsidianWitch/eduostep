@@ -21,7 +21,6 @@
 - [x] 14 [Multi-level Paging](http://www.cs.wisc.edu/~remzi/OSTEP/vm-smalltables.pdf)
 - [x] 15 [Paging Mechanism](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys.pdf)
 - [x] 16 [Paging Policy](http://www.cs.wisc.edu/~remzi/OSTEP/vm-beyondphys-policy.pdf)
-- [ ] [Complete VM](http://www.cs.wisc.edu/~remzi/OSTEP/vm-complete.pdf)
 
 ### Concurrency
 
