@@ -77,10 +77,7 @@
         done
     }
     export -f experiments # make function visible to `parallel`
-
-    seq 0 100 16383 \
-        | parallel 'experiments {}' \
-        | ./plot.py > q5plot.png
+    parallel 'experiments {}' ::: {0..16383..100} | ./plot.py > q5plot.png
     ```
 
     ![plot](q5plot.png)

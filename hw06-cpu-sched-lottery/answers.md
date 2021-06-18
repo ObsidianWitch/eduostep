@@ -66,8 +66,7 @@
     }
     export -f experiments # make function visible to `parallel`
 
-    { echo 1; seq 10 10 1000; } \
-        | parallel 'echo "{} $(experiments {})"' \
+    parallel 'echo "{} $(experiments {})"' ::: 1 {10..1000..10} \
         | ./plot.py > q5lottery.png
     ```
 
@@ -77,8 +76,8 @@
 
     ```sh
     # stride plot
-    { echo 1; seq 10 10 1000; } \
-        | parallel 'echo "{} $(./stride.py {}:100 {}:100 | ./unfairness.py)"' \
+    parallel 'echo "{} $(./stride.py {}:100 {}:100 | ./unfairness.py)"' \
+        ::: 1 {10..1000..10} \
         | ./plot.py > q5stride.png
     ```
 
