@@ -61,6 +61,10 @@
 
     * See `gentrace.py`, the weight parameter of `random.choices` is used.
     * LRU performs better than FIFO, RAND and CLOCK w/ clockbits <= 3.
+    * LRU & RAND hit rates comparison:
+        * `LRU_hit_rates = (3.23, 31.0, 57.99, 76.14, 83.95, 87.37, 90.03, 92.5, 94.95, 97.38, 99.9)`
+        * `RAND_hit_rates = (3.28, 29.90, 52.46, 66.69, 75.37, 81.16, 85.82, 90.04, 93.54, 96.90, 99.90)`
+        * `LRU_hit_rates / RAND_hit_rates = (1.0000 1.0378 1.1126 1.1507 1.1187 1.0757 1.0497 1.0277 1.0151 1.0062 1.0000)`
     ![figure: 80-20 Workload](wstep8020.png)
 
 5. Use a program like `valgrind` to instrument a real application and generate a virtual page reference stream. For example, running `valgrind --tool=lackey --trace-mem=yes ls` will output a nearly-complete reference trace of every instruction and data reference made by the program `ls`. To make this useful for the simulator above, you’ll have to first transform each virtual memory reference into a virtual page-number reference (done by masking off the offset and shifting the resulting bits downward). How big of a cache is needed for your application trace in order to satisfy a large fraction of requests? Plot a graph of its working set as the size of the cache increases.

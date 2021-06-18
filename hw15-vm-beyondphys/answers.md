@@ -27,7 +27,7 @@
     3421796 2428028
     ```
 
-    `swpd` stays the same, no memory was swapped while `vmstat` and `mem` were running. `mem 1024` allocates 1024 MiB of memory, so vmstat reports that `free` decreased by approximately `1024*1024 KiB`. When `mem` exits, \~1024 MiB are freed as expected (there are other processes running at the same time so it's not surprising that the amount freed is different).
+    `swpd` stays the same, no memory was swapped while `vmstat` and `mem` were running. `mem 1024` allocates 1024 MiB of memory, so vmstat reports that `free` decreased by approximately `1024*1024 KiB`. When `mem` exits, \~1024 MiB are freed as expected (there are other processes running at the same time so it's not surprising that the amount freed is slightly different).
 
 3. We’ll next look at the `swap` columns (`si` and `so`), which indicate how much swapping is taking place to and from the disk. Of course, to activate these, you’ll need to run `mem` with large amounts of memory. First, examine how much free memory is on your Linux system (for example, by typing `cat /proc/meminfo`; type `man proc` for details on the `/proc` file system and the types of information you can find there). One of the first entries in `/proc/meminfo` is the total amount of memory in your system. Let’s assume it’s something like 8 GB of memory; if so, start by running `mem 4000` (about 4 GB) and watching the swap in/out columns. Do they ever give non-zero values? Then, try with 5000, 6000, etc. What happens to these values as the program enters the second loop (and beyond), as compared to the first loop? How much data (total) are swapped in and out during the second, third, and subsequent loops? (do the numbers make sense?)
 
@@ -73,7 +73,7 @@
 
 4. Do the same experiments as above, but now watch the other statistics (such as CPU utilization, and block I/O statistics). How do they change when `mem` is running?
 
-    * `mem 8000`: CPU `wa` (time spent waiting for I/O) increase and I/O activity increase (`bi` and `bo`).
+    * `mem 8000`: CPU `wa` (time spent waiting for I/O) increases and I/O activity also increases (`bi` and `bo`).
 
 5. Now let’s examine performance. Pick an input for `mem` that comfortably fits in memory (say 4000 if the amount of memory on the system is 8 GB). How long does loop 0 take (and subsequent loops 1, 2, etc.)? Now pick a size comfortably beyond the size of memory (say 12000 again assuming 8 GB of memory). How long do the loops take here? How do the bandwidth numbers compare? How different is performance when constantly swapping versus fitting everything comfortably in memory? Can you make a graph, with the size of memory used by `mem` on the x-axis, and the bandwidth of accessing said memory on the y-axis? Finally, how does the performance of the first loop compare to that of subsequent loops, for both the case where everything fits in memory and where it doesn’t?
 

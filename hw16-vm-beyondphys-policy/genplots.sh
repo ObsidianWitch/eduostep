@@ -38,6 +38,6 @@ valgrind_plot() {
 }
 
 mkdir -p 'out/'
-# generate_plot nolocality
-# generate_plot step8020
+generate_plot nolocality
+generate_plot step8020
 valgrind_plot
