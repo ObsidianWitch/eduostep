@@ -63,7 +63,7 @@
     * LRU performs better than FIFO, RAND and CLOCK w/ clockbits <= 3.
     * LRU & RAND hit rates comparison:
         * `LRU_hit_rates = (3.23, 31.0, 57.99, 76.14, 83.95, 87.37, 90.03, 92.5, 94.95, 97.38, 99.9)`
-        * `RAND_hit_rates = (3.28, 29.90, 52.46, 66.69, 75.37, 81.16, 85.82, 90.04, 93.54, 96.90, 99.90)`
+        * `RAND_hit_rates = (3.23, 29.87, 52.12, 66.17, 75.04, 81.22, 85.77, 90.01, 93.54, 96.78, 99.90)`
         * `LRU_hit_rates / RAND_hit_rates = (1.0000 1.0378 1.1126 1.1507 1.1187 1.0757 1.0497 1.0277 1.0151 1.0062 1.0000)`
     ![figure: 80-20 Workload](wstep8020.png)
 
