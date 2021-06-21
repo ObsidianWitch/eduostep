@@ -24,7 +24,7 @@
 
 ### Concurrency
 
-- [ ] [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
+- [x] 17 [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
 - [ ] [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)
 - [ ] [Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)
 - [ ] [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf)
