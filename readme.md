@@ -25,7 +25,7 @@
 ### Concurrency
 
 - [x] hw26 - [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
-- [ ] [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)
+- [ ] hw27 - [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)
 - [ ] [Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)
 - [ ] [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf)
 - [ ] [Condition Variables](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)
