@@ -27,7 +27,7 @@
 - [x] hw26 - [Threads Intro](http://www.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf)
 - [x] hw27 - [Thread API](http://www.cs.wisc.edu/~remzi/OSTEP/threads-api.pdf)
 - [x] hw28 - [Locks](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks.pdf)
-- [ ] [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf)
+- [ ] hw29 - [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf)
 - [ ] [Condition Variables](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)
 - [ ] [Semaphores](http://www.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf)
 - [ ] [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)
