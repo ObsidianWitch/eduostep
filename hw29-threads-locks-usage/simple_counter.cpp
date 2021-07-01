@@ -34,8 +34,11 @@ void worker(SimpleCounter &counter, int nloops) {
     }
 }
 
-// Usage: simple_counter <nthreads> <nloops>
 int main(int argc, char *argv[]) {
+    if (argc < 3) {
+        std::cerr << "usage: " << argv[0] << " <nthreads> <nloops>" << std::endl;
+        return 1;
+    }
     auto nthreads = std::stoi(argv[1]);
     auto nloops = std::stoi(argv[2]);
 
@@ -51,8 +54,7 @@ int main(int argc, char *argv[]) {
     auto end = chrono::steady_clock::now();
     auto elapsed = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-    std::cout << "IN " << nthreads << " " << nloops
-              << " OUT " << counter.get()
+    std::cout << counter.get()
               << " " << (float) elapsed / chrono::nanoseconds::period::den
               << std::endl;
     return 0;

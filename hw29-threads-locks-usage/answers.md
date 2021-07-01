@@ -4,10 +4,17 @@ I used `std::chrono::steady_clock` w/ a `tick period` of 1 ns on my computer.
 
 Q2. Now, build a simple concurrent counter and measure how long it takes to increment the counter many times as the number of threads increases. How many CPUs are available on the system you are using? Does this number impact your measurements at all?
 
-See `simple_counter.cpp`. The following plot shows the execution time of `simple_counter` with [1-10] threads and  100000000 loops. Four CPUs are available on my system.
-![plot](q2plot.png)
+* See `simple_counter.cpp`.
+* The following plot shows the execution time of `simple_counter` and `sloppy_counter` (`threshold=1024`) with `nthreads=[1;10]` and `nloops=100000000`. Four CPUs are available on my system.
+
+![Performance of simple vs sloppy counters](counters_plot.png)
 
 Q3. Next, build a version of the sloppy counter. Once again, measure its performance as the number of threads varies, as well as the threshold. Do the numbers match what you see in the chapter?
+
+* See `sloppy_counter.cpp` and the plot in the previous question.
+* The following plot shows the execution time of `sloppy_counter` with `nthreads=4` `nloops=100000000` and `threshold=[2**0;2**10]`.
+
+![Sloppy counter scaling](threshold_plot.png)
 
 Q4. Build a version of a linked list that uses hand-over-hand locking [MS04], as cited in the chapter. You should read the paper first to understand how it works, and then implement it. Measure its performance. When does a hand-over-hand list work better than a standard list as shown in the chapter?
 
