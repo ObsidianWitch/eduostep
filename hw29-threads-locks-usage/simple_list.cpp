@@ -1,9 +1,6 @@
 #include <iostream>
-#include <vector>
-#include <thread>
 #include <mutex>
-#include <chrono>
-namespace chrono = std::chrono;
+#include "shared.hpp"
 
 struct Node {
     int data;
@@ -58,7 +55,7 @@ private:
     int size_;
 };
 
-void worker(SimpleList &list, int nloops) {
+void worker(int threadID, SimpleList &list, int nloops) {
     for (int i = 0; i < nloops; ++i) {
         list.insert(i);
     }
@@ -73,19 +70,7 @@ int main(int argc, char *argv[]) {
     auto nloops = std::stoi(argv[2]);
 
     SimpleList list;
-    auto start = chrono::steady_clock::now();
-    std::vector<std::thread> threads;
-    for (int i = 0; i < nthreads; ++i) {
-        threads.push_back(std::thread(worker, std::ref(list), nloops));
-    }
-    for (auto &thread : threads) {
-        thread.join();
-    }
-    auto end = chrono::steady_clock::now();
-    auto elapsed = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
-
-    std::cout << list.size()
-              << " " << (float) elapsed / chrono::nanoseconds::period::den
-              << std::endl;
+    auto elapsed_s = time_workers(nthreads, worker, std::ref(list), nloops);
+    std::cout << list.size() << " " << elapsed_s << std::endl;
     return 0;
 }

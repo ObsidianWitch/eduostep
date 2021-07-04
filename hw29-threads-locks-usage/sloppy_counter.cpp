@@ -1,9 +1,7 @@
 #include <iostream>
 #include <vector>
-#include <thread>
 #include <mutex>
-#include <chrono>
-namespace chrono = std::chrono;
+#include "shared.hpp"
 
 class SloppyCounter {
 public:
@@ -43,7 +41,7 @@ private:
     std::vector<std::mutex> mutexLocal;
 };
 
-void worker(int ncpus, int threadID, SloppyCounter &counter, int nloops) {
+void worker(int threadID, int ncpus, SloppyCounter &counter, int nloops) {
     int cpuID = threadID % ncpus;
     for (int i = 0; i < nloops; ++i) {
         counter.increment(cpuID);
@@ -63,19 +61,10 @@ int main(int argc, char *argv[]) {
     auto threshold = argc >= 4 ? std::stoi(argv[3]) : 1024;
 
     SloppyCounter counter(ncpus, threshold);
-    auto start = chrono::steady_clock::now();
-    std::vector<std::thread> threads;
-    for (int i = 0; i < nthreads; ++i) {
-        threads.push_back(std::thread(worker, ncpus, i, std::ref(counter), nloops));
-    }
-    for (auto &thread : threads) {
-        thread.join();
-    }
-    auto end = chrono::steady_clock::now();
-    auto elapsed = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
+    auto elapsed_s = time_workers(
+        nthreads, worker, ncpus, std::ref(counter), nloops
+    );
 
-    std::cout << counter.get()
-              << " " << (float) elapsed / chrono::nanoseconds::period::den
-              << std::endl;
+    std::cout << counter.get() << " " << elapsed_s << std::endl;
     return 0;
 }
