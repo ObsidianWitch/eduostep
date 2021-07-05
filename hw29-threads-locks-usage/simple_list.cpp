@@ -55,9 +55,15 @@ private:
     int size_;
 };
 
-void worker(int threadID, SimpleList &list, int nloops) {
+void worker_insert(int threadID, SimpleList &list, int nloops) {
     for (int i = 0; i < nloops; ++i) {
         list.insert(i);
+    }
+}
+
+void worker_lookup(int threadID, SimpleList &list, int nloops) {
+    for (int i = 0; i < nloops; ++i) {
+        list.lookup(nloops - 11);
     }
 }
 
@@ -70,7 +76,13 @@ int main(int argc, char *argv[]) {
     auto nloops = std::stoi(argv[2]);
 
     SimpleList list;
-    auto elapsed_s = time_workers(nthreads, worker, std::ref(list), nloops);
-    std::cout << list.size() << " " << elapsed_s << std::endl;
+    auto elapsed = time_workers(nthreads, worker_insert, std::ref(list), nloops);
+    std::cout << "program=" << argv[0] << " op=insert"
+              << " nthreads=" << nthreads << " nloops=" << nloops
+              << " size=" << list.size() << " time=" << elapsed  << std::endl;
+    elapsed = time_workers(nthreads, worker_lookup, std::ref(list), nloops);
+    std::cout << "program=" << argv[0] << " op=lookup-10"
+              << " nthreads=" << nthreads << " nloops=" << nloops
+              << " size=" << list.size() << " time=" << elapsed  << std::endl;
     return 0;
 }

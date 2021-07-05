@@ -6,16 +6,19 @@ from matplotlib import pyplot
 # retrieve data
 data = {}
 for line in sys.stdin:
-    line = line.split()
-    threshold = int(line[0])
-    result = float(line[2])
+    line = dict(kwarg.split('=') for kwarg in line.split())
+    threshold = int(line['threshold'])
+    time = float(line['time'])
+
     if threshold not in data:
         data[threshold] = []
-    data[threshold].append(result)
+    data[threshold].append(time)
+
+# sort by threshold and average times
 data = dict(sorted(data.items()))
 data = dict(
-    (threshold, statistics.mean(results))
-    for threshold, results in data.items()
+    (threshold, statistics.mean(times))
+    for threshold, times in data.items()
 )
 
 # plot data

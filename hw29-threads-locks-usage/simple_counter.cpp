@@ -40,7 +40,9 @@ int main(int argc, char *argv[]) {
     auto nloops = std::stoi(argv[2]);
 
     SimpleCounter counter;
-    auto elapsed_s = time_workers(nthreads, worker, std::ref(counter), nloops);
-    std::cout << counter.get() << " " << elapsed_s << std::endl;
+    auto elapsed = time_workers(nthreads, worker, std::ref(counter), nloops);
+    std::cout << "program=" << argv[0] << " op=increment"
+              << " nthreads=" << nthreads << " nloops=" << nloops
+              << " count=" << counter.get() << " time=" << elapsed  << std::endl;
     return 0;
 }

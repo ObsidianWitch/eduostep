@@ -6,20 +6,23 @@ from matplotlib import pyplot
 # retrieve data
 data = {}
 for line in sys.stdin:
-    line = line.split()
-    program = line[0]
-    nthreads = int(line[1])
-    result = float(line[3])
+    line = dict(kwarg.split('=') for kwarg in line.split())
+    program = f'{line["program"].split("/")[-1]} {line["op"]}'
+    nthreads = int(line['nthreads'])
+    time = float(line['time'])
+
     if program not in data:
         data[program] = {}
     if nthreads not in data[program]:
         data[program][nthreads] = []
-    data[program][nthreads].append(result)
+    data[program][nthreads].append(time)
+
+# sort by nthreads & average times
 for program, threads in data.items():
     data[program] = dict(sorted(threads.items()))
     data[program] = dict(
-        (thread, statistics.mean(results))
-        for thread, results in threads.items()
+        (thread, statistics.mean(times))
+        for thread, times in threads.items()
     )
 
 # plot data

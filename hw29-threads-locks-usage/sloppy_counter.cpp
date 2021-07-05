@@ -61,10 +61,10 @@ int main(int argc, char *argv[]) {
     auto threshold = argc >= 4 ? std::stoi(argv[3]) : 1024;
 
     SloppyCounter counter(ncpus, threshold);
-    auto elapsed_s = time_workers(
-        nthreads, worker, ncpus, std::ref(counter), nloops
-    );
-
-    std::cout << counter.get() << " " << elapsed_s << std::endl;
+    auto elapsed = time_workers(nthreads, worker, ncpus, std::ref(counter), nloops);
+    std::cout << "program=" << argv[0] << " op=increment"
+              << " nthreads=" << nthreads << " nloops=" << nloops
+              << " threshold=" << threshold << " count=" << counter.get()
+              << " time=" << elapsed << std::endl;
     return 0;
 }
