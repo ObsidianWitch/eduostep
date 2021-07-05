@@ -18,6 +18,11 @@ Q3. Next, build a version of the sloppy counter. Once again, measure its perform
 
 Q4. Build a version of a linked list that uses hand-over-hand locking [MS04], as cited in the chapter. You should read the paper first to understand how it works, and then implement it. Measure its performance. When does a hand-over-hand list work better than a standard list as shown in the chapter?
 
+* See `simple_list.cpp` and `hoh_list.cpp`.
+* The following plot show the execution time of the lookup operation on the 10th element in a `simple_list` (coarse-grained lock) and a `hoh_list` (hand-over-hand lock) with `nthreads=4` and `nloops=1000000` averaged over 100 experiments.
+
+![Performance of lookup in simple vs hoh locking list](lists_plot.png)
+
 Q5. Pick your favorite interesting data structure, such as a B-tree or other slightly more interested structure. Implement it, and start with a simple locking strategy such as a single lock. Measure its performance as the number of concurrent threads increases.
 
 Q6. Finally, think of a more interesting locking strategy for this favorite data structure of yours. Implement it, and measure its performance. How does it compare to the straightforward locking approach?

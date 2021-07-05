@@ -20,7 +20,7 @@ time {
 }
 
 time {
-    for program in simple_list; do
+    for program in simple_list hoh_list; do
     for nthreads in {1..4}; do
     for experiment in {1..100}; do
         "out/$program" "$nthreads" 1000000
