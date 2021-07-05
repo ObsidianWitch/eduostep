@@ -1,8 +1,8 @@
-all: $(patsubst %.cpp,out/%, $(wildcard *.cpp))
+all: $(patsubst src/%.cpp,out/%, $(wildcard src/*.cpp))
 
 clean:
 	rm -f out/*
 
-out/%: %.cpp shared.hpp
+out/%: src/%.cpp src/shared.hpp
 	mkdir -p out
-	g++ -Wall -O0 -pthread $*.cpp -o out/$*
+	g++ -Wall -O0 -pthread src/$*.cpp -o out/$*
