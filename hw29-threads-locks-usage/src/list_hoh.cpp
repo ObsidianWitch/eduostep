@@ -12,7 +12,7 @@ struct Node {
 
 class HandOverHandList {
 public:
-    HandOverHandList(): head_(NULL), size_(0), insert_mutex_() {}
+    HandOverHandList(): head_(NULL), size_(0), mutex_() {}
 
     ~HandOverHandList() {
         Node *current = head_;
@@ -25,11 +25,17 @@ public:
 
     void insert(int data) {
         auto *node = new Node(data, NULL);
-        insert_mutex_.lock();
+
+        auto &head_mutex = head_ ? head_->mutex : mutex_;
+        head_mutex.lock();
+        node->mutex.lock();
+
         node->next = head_;
         head_ = node;
         size_++;
-        insert_mutex_.unlock();
+
+        node->mutex.unlock();
+        head_mutex.unlock();
     }
 
     bool lookup(int data) {
@@ -48,15 +54,15 @@ public:
     }
 
     int size() {
-        insert_mutex_.lock();
+        head_->mutex.lock();
         int result = size_;
-        insert_mutex_.unlock();
+        head_->mutex.unlock();
         return result;
     }
 private:
     Node *head_;
     int size_;
-    std::mutex insert_mutex_;
+    std::mutex mutex_;
 };
 
 void worker_insert(int threadID, HandOverHandList &list, int nloops) {
