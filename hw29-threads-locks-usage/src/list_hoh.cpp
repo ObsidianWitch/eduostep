@@ -46,7 +46,7 @@ public:
                 e->mutex.unlock();
                 return true;
             }
-            if (e->next) {
+            if (e->next != &END) {
                 e->next->mutex.lock();
             }
             e->mutex.unlock();
