@@ -1,6 +1,6 @@
 #include <iostream>
 #include <mutex>
-#include <limits>
+#include <climits>
 #include "shared.hpp"
 
 struct Node {
@@ -10,13 +10,15 @@ struct Node {
     Node(int data, Node *next): data(data), next(next), mutex() {}
 };
 
+Node END(INT_MIN, NULL);
+
 class HandOverHandList {
 public:
-    HandOverHandList(): head_(NULL), size_(0), mutex_() {}
+    HandOverHandList(): head_(&END), size_(0) {}
 
     ~HandOverHandList() {
         Node *current = head_;
-        while (current) {
+        while (current != &END) {
             Node *tmp = current->next;
             delete current;
             current = tmp;
@@ -26,21 +28,20 @@ public:
     void insert(int data) {
         auto *node = new Node(data, NULL);
 
-        auto &head_mutex = head_ ? head_->mutex : mutex_;
-        head_mutex.lock();
+        head_->mutex.lock();
         node->mutex.lock();
 
         node->next = head_;
         head_ = node;
         size_++;
 
-        node->mutex.unlock();
-        head_mutex.unlock();
+        node->mutex.unlock(); // current head unlock
+        node->next->mutex.unlock(); // previous head unlock
     }
 
     bool lookup(int data) {
         head_->mutex.lock();
-        for (Node *e = head_; e != NULL; e = e->next) {
+        for (Node *e = head_; e != &END; e = e->next) {
             if (e->data == data) {
                 e->mutex.unlock();
                 return true;
@@ -62,7 +63,6 @@ public:
 private:
     Node *head_;
     int size_;
-    std::mutex mutex_;
 };
 
 void worker_insert(int threadID, HandOverHandList &list, int nloops) {
