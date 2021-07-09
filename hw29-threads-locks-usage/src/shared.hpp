@@ -13,7 +13,7 @@ float time_workers(
     auto start = chrono::steady_clock::now();
     std::vector<std::thread> threads;
     for (int i = 0; i < nthreads; ++i) {
-        threads.push_back(std::thread(worker, i, args...));
+        threads.emplace_back(worker, i, args...);
     }
     for (auto &thread : threads) {
         thread.join();
