@@ -28,7 +28,7 @@ time {
 }
 
 time {
-    for program in bst_simple; do
+    for program in bst_simple bst_better; do
     for nthreads in {1..4}; do
     for experiment in {1..100}; do
         "out/$program" "$nthreads" 10000

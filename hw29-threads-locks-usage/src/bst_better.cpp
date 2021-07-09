@@ -1,5 +1,5 @@
 #include <iostream>
-#include <mutex>
+#include <shared_mutex>
 #include <vector>
 #include <random>
 #include "shared.hpp"
@@ -18,10 +18,10 @@ struct Node {
 
 class BinarySearchTree {
 public:
-    BinarySearchTree(): root_(NULL), mutex_(), size_(0), height_(0) {}
+    BinarySearchTree(): root_(NULL), rw_mutex_(), size_(0), height_(0) {}
 
     ~BinarySearchTree() {
-        mutex_.lock();
+        rw_mutex_.lock();
         if (root_ == NULL) { return; }
         std::vector<Node*> to_process = { root_ };
         while (!to_process.empty()) {
@@ -31,22 +31,22 @@ public:
             if (e->right != NULL) { to_process.push_back(e->right); }
             delete e;
         }
-        mutex_.unlock();
+        rw_mutex_.unlock();
     }
 
     Node* search(int key) {
-        mutex_.lock();
+        rw_mutex_.lock_shared();
         auto *result = root_;
         while (result != NULL && key != result->key) {
             if (key < result->key) { result = result->left; }
             else { result = result->right; }
         }
-        mutex_.unlock();
+        rw_mutex_.unlock_shared();
         return result;
     }
 
     void insert(int key) {
-        mutex_.lock();
+        rw_mutex_.lock();
         Node *parent = NULL;
         auto *current = root_;
         while (current != NULL) {
@@ -65,26 +65,26 @@ public:
         }
         size_++;
         height_ = std::max(height_, node->height);
-        mutex_.unlock();
+        rw_mutex_.unlock();
     }
 
     int size() {
-        mutex_.lock();
+        rw_mutex_.lock_shared();
         int result = size_;
-        mutex_.unlock();
+        rw_mutex_.unlock_shared();
         return result;
     }
 
     int height() {
-        mutex_.lock();
+        rw_mutex_.lock_shared();
         int result = height_;
-        mutex_.unlock();
+        rw_mutex_.unlock_shared();
         return result;
     }
 
 private:
     Node *root_;
-    std::mutex mutex_;
+    std::shared_mutex rw_mutex_;
     int size_;
     int height_;
 };
