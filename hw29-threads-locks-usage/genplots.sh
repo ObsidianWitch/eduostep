@@ -22,11 +22,11 @@ time {
 }
 
 time {
-    for program in list_simple list_hoh; do
+    for program in list_simple; do
     for nthreads in {1..4}; do
     for experiment in {1..100}; do
         echo "$program $nthreads $experiment" >&2
-        "out/$program" "$nthreads" 1000000
+        "out/$program" "$nthreads" 1000
     done; done; done | ./plot_xthreads_ytime.py > plot_lists.png
 }
 
