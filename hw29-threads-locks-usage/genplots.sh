@@ -26,3 +26,11 @@ time {
         "out/$program" "$nthreads" 1000000
     done; done; done | ./plot_xthreads_ytime.py > plot_lists.png
 }
+
+time {
+    for program in bst_simple; do
+    for nthreads in {1..4}; do
+    for experiment in {1..100}; do
+        "out/$program" "$nthreads" 10000
+    done; done; done | ./plot_xthreads_ytime.py > plot_bst.png
+}
