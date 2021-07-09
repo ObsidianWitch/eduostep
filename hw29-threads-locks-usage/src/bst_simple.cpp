@@ -105,6 +105,16 @@ void worker_lookup(int threadID, BinarySearchTree &tree, int nloops) {
     }
 }
 
+void worker_interleave(int threadID, BinarySearchTree &tree, int nloops) {
+    std::random_device rdev;
+    std::mt19937 gen(rdev());
+    std::uniform_int_distribution<> distribution;
+    for (int i = 0; i < nloops; ++i) {
+        tree.insert(distribution(gen));
+        tree.search(distribution(gen));
+    }
+}
+
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         std::cerr << "usage: " << argv[0] << " <nthreads> <nloops>" << std::endl;
@@ -121,6 +131,11 @@ int main(int argc, char *argv[]) {
               << " time=" << elapsed  << std::endl;
     elapsed = time_workers(nthreads, worker_lookup, std::ref(tree), nloops);
     std::cout << "program=" << argv[0] << " op=lookup_rand"
+              << " nthreads=" << nthreads << " nloops=" << nloops
+              << " size=" << tree.size() << " height=" << tree.height()
+              << " time=" << elapsed  << std::endl;
+    elapsed = time_workers(nthreads, worker_interleave, std::ref(tree), nloops);
+    std::cout << "program=" << argv[0] << " op=interleave_rand"
               << " nthreads=" << nthreads << " nloops=" << nloops
               << " size=" << tree.size() << " height=" << tree.height()
               << " time=" << elapsed  << std::endl;
