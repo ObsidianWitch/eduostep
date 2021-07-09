@@ -125,21 +125,25 @@ int main(int argc, char *argv[]) {
     auto nthreads = std::stoi(argv[1]);
     auto nloops = std::stoi(argv[2]);
 
-    BinarySearchTree tree;
-    auto elapsed = time_workers(nthreads, worker_insert, std::ref(tree), nloops);
-    std::cout << "program=" << argv[0] << " op=insert_rand"
-              << " nthreads=" << nthreads << " nloops=" << nloops
-              << " size=" << tree.size() << " height=" << tree.height()
-              << " time=" << elapsed  << std::endl;
-    elapsed = time_workers(nthreads, worker_lookup, std::ref(tree), nloops);
-    std::cout << "program=" << argv[0] << " op=lookup_rand"
-              << " nthreads=" << nthreads << " nloops=" << nloops
-              << " size=" << tree.size() << " height=" << tree.height()
-              << " time=" << elapsed  << std::endl;
-    elapsed = time_workers(nthreads, worker_interleave, std::ref(tree), nloops);
-    std::cout << "program=" << argv[0] << " op=interleave_rand"
-              << " nthreads=" << nthreads << " nloops=" << nloops
-              << " size=" << tree.size() << " height=" << tree.height()
-              << " time=" << elapsed  << std::endl;
+    {
+        BinarySearchTree tree;
+        auto elapsed = time_workers(nthreads, worker_insert, std::ref(tree), nloops);
+        std::cout << "program=" << argv[0] << " op=insert_rand"
+                  << " nthreads=" << nthreads << " nloops=" << nloops
+                  << " size=" << tree.size() << " height=" << tree.height()
+                  << " time=" << elapsed  << std::endl;
+        elapsed = time_workers(nthreads, worker_lookup, std::ref(tree), nloops);
+        std::cout << "program=" << argv[0] << " op=lookup_rand"
+                  << " nthreads=" << nthreads << " nloops=" << nloops
+                  << " size=" << tree.size() << " height=" << tree.height()
+                  << " time=" << elapsed  << std::endl;
+    } {
+        BinarySearchTree tree;
+        auto elapsed = time_workers(nthreads, worker_interleave, std::ref(tree), nloops);
+        std::cout << "program=" << argv[0] << " op=interleave_rand"
+                  << " nthreads=" << nthreads << " nloops=" << nloops
+                  << " size=" << tree.size() << " height=" << tree.height()
+                  << " time=" << elapsed  << std::endl;
+    }
     return 0;
 }
