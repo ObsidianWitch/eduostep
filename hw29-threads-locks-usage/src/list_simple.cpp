@@ -33,14 +33,11 @@ public:
         mutex_.unlock();
     }
 
-    bool lookup(int data) {
-        bool result = false;
+    Node* search(int data) {
         mutex_.lock();
-        for (Node *e = head_; e != NULL; e = e->next) {
-            if (e->data == data) {
-                result = true;
-                break;
-            }
+        auto *result = head_;
+        while (result != NULL && data != result->data) {
+            result = result->next;
         }
         mutex_.unlock();
         return result;
@@ -72,7 +69,7 @@ void worker_lookup(int threadID, SimpleList &list, int nloops) {
     std::mt19937 gen(rdev());
     std::uniform_int_distribution<> distribution;
     for (int i = 0; i < nloops; ++i) {
-        list.lookup(distribution(gen));
+        list.search(distribution(gen));
     }
 }
 
@@ -82,7 +79,7 @@ void worker_interleave(int threadID, SimpleList &list, int nloops) {
     std::uniform_int_distribution<> distribution;
     for (int i = 0; i < nloops; ++i) {
         list.insert(distribution(gen));
-        list.lookup(distribution(gen));
+        list.search(distribution(gen));
     }
 }
 
