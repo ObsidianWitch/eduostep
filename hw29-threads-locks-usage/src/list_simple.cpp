@@ -1,6 +1,5 @@
 #include <iostream>
 #include <mutex>
-#include <random>
 #include "shared.hpp"
 
 struct Node {
@@ -55,34 +54,6 @@ private:
     int size_;
 };
 
-void worker_insert(int threadID, SimpleList &list, int nloops) {
-    std::random_device rdev;
-    std::mt19937 gen(rdev());
-    std::uniform_int_distribution<> distribution;
-    for (int i = 0; i < nloops; ++i) {
-        list.insert(distribution(gen));
-    }
-}
-
-void worker_lookup(int threadID, SimpleList &list, int nloops) {
-    std::random_device rdev;
-    std::mt19937 gen(rdev());
-    std::uniform_int_distribution<> distribution;
-    for (int i = 0; i < nloops; ++i) {
-        list.search(distribution(gen));
-    }
-}
-
-void worker_interleave(int threadID, SimpleList &list, int nloops) {
-    std::random_device rdev;
-    std::mt19937 gen(rdev());
-    std::uniform_int_distribution<> distribution;
-    for (int i = 0; i < nloops; ++i) {
-        list.insert(distribution(gen));
-        list.search(distribution(gen));
-    }
-}
-
 int main(int argc, char *argv[]) {
     if (argc < 3) {
         std::cerr << "usage: " << argv[0] << " <nthreads> <nloops>" << std::endl;
@@ -93,17 +64,20 @@ int main(int argc, char *argv[]) {
 
     {
         SimpleList list;
-        auto elapsed = time_workers(nthreads, worker_insert, std::ref(list), nloops);
+        auto elapsed = time_workers(nthreads, worker_insert<SimpleList>,
+            std::ref(list), nloops);
         std::cout << "program=" << argv[0] << " op=insert_rand"
                   << " nthreads=" << nthreads << " nloops=" << nloops
                   << " size=" << list.size() << " time=" << elapsed  << std::endl;
-        elapsed = time_workers(nthreads, worker_lookup, std::ref(list), nloops);
+        elapsed = time_workers(nthreads, worker_lookup<SimpleList>,
+            std::ref(list), nloops);
         std::cout << "program=" << argv[0] << " op=lookup_rand"
                   << " nthreads=" << nthreads << " nloops=" << nloops
                   << " size=" << list.size() << " time=" << elapsed  << std::endl;
     } {
         SimpleList list;
-        auto elapsed = time_workers(nthreads, worker_interleave, std::ref(list), nloops);
+        auto elapsed = time_workers(nthreads, worker_interleave<SimpleList>,
+            std::ref(list), nloops);
         std::cout << "program=" << argv[0] << " op=interleave_rand"
                   << " nthreads=" << nthreads << " nloops=" << nloops
                   << " size=" << list.size() << " time=" << elapsed  << std::endl;
