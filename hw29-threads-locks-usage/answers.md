@@ -18,18 +18,18 @@ Q3. Next, build a version of the sloppy counter. Once again, measure its perform
 
 Q4. Build a version of a linked list that uses hand-over-hand locking [MS04], as cited in the chapter. You should read the paper first to understand how it works, and then implement it. Measure its performance. When does a hand-over-hand list work better than a standard list as shown in the chapter?
 
-* See `list_simple.cpp` ~~and `list_hoh.cpp`~~ (deleted, incorrect implementation).
-* The following plot show the execution time of lookup, insert and interleaved operations on random elements of `list_simple` (coarse-grained lock) with `nthreads=4` and `nloops=1000` averaged over 100 experiments.
+* See `list_simple.cpp` and `list_hoh.cpp`.
+* The following plot show the execution time of lookup, insert and interleaved operations on random elements of `list_simple` (coarse-grained lock) and `list_hoh` (fine-grained lock) with `nthreads=4` and `nloops=1000` averaged over 100 experiments.
 * > Conceptually, a hand-over-hand linked list makes some sense; it enables a high degree of concurrency in list operations. However, in practice, it is hard to make such a structure faster than the simple single lock approach, as the overheads of acquiring and releasing locks for each node of a list traversal is prohibitive. Even with very large lists, and a large number of threads, the concurrency enabled by allowing multiple ongoing traversals is unlikely to be faster than simply grabbing a single lock, performing an operation, and releasing it. ― OSTEP 29.2 Concurrent Linked Lists
 
-![Performance of insert, lookup and interleaved operations in simple list](plot_lists.png)
+![Performance of insert, lookup and interleaved operations in simple and hoh lists](plot_lists.png)
 
 Q5. Pick your favorite interesting data structure, such as a B-tree or other slightly more interested structure. Implement it, and start with a simple locking strategy such as a single lock. Measure its performance as the number of concurrent threads increases.
 
-See `bst_simple.cpp`.
+See `bst_simple.cpp`. See following answer for the plot.
 
 Q6. Finally, think of a more interesting locking strategy for this favorite data structure of yours. Implement it, and measure its performance. How does it compare to the straightforward locking approach?
 
-See `bst_better.cpp`. I used a `std::shared_mutex` instead of a `std::mutex`. Read-only sections are locked with `lock_shared()` and write sections are locked with `lock()`. It allows multiple read operations to happen concurrently as long as no write happen at the same time.
+See `bst_better.cpp`. I used a `std::shared_mutex` instead of a `std::mutex`. Read-only sections are locked with `lock_shared()` and write sections are locked with `lock()`. It allows multiple read operations to happen concurrently as long as no write happen at the same time. It also stays simple and easy to maintain.
 
 ![Performance of insert, lookup and interleaved operations in simple and better binary search trees](plot_bst.png)

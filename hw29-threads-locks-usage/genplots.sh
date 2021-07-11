@@ -22,7 +22,7 @@ time {
 }
 
 time {
-    for program in list_simple; do
+    for program in list_simple list_hoh; do
     for nthreads in {1..4}; do
     for experiment in {1..100}; do
         echo "$program $nthreads $experiment" >&2
