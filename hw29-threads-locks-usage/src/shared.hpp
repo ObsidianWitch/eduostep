@@ -5,6 +5,7 @@
 #include <thread>
 #include <chrono>
 #include <random>
+#include <cassert>
 namespace chrono = std::chrono;
 
 template<class Function, class... Args>
@@ -32,6 +33,15 @@ void output(
     std::cout << "program=" << program << " op=" << worker
               << " nthreads=" << nthreads << " nloops=" << nloops
               << " " << ds << " time=" << elapsed  << std::endl;
+}
+
+template<class Collection>
+void worker_test(int threadID, Collection &collection, int nloops) {
+    for (int i = 0; i < nloops; ++i) {
+        collection.insert(i);
+        assert(collection.search(i)->key == i);
+    }
+    assert(collection.search(nloops) == NULL);
 }
 
 template<class Collection>
@@ -68,12 +78,21 @@ void worker_interleave(int threadID, Collection &collection, int nloops) {
 template<class Collection>
 int main_collection(int argc, char *argv[]) {
     if (argc < 3) {
-        std::cerr << "usage: " << argv[0] << " <nthreads> <nloops>" << std::endl;
+        std::cerr << "[TEST=1] usage: " << argv[0] << " <nthreads> <nloops>"
+                  << std::endl;
         return 1;
     }
     auto nthreads = std::stoi(argv[1]);
     auto nloops = std::stoi(argv[2]);
+    auto env_test = std::getenv("TEST");
 
+    if (env_test != NULL && std::string(env_test) == "1") {
+        Collection collection;
+        auto elapsed = time_workers(nthreads, worker_test<Collection>,
+            std::ref(collection), nloops);
+        assert(collection.size() == nthreads * nloops);
+        output(argv[0], "test", nthreads, nloops, collection, elapsed);
+    }
     {
         Collection collection;
         auto elapsed = time_workers(nthreads, worker_insert<Collection>,

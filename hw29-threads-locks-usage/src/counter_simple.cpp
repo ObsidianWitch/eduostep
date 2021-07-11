@@ -45,6 +45,7 @@ int main(int argc, char *argv[]) {
 
     SimpleCounter counter;
     auto elapsed = time_workers(nthreads, worker, std::ref(counter), nloops);
+    assert(counter.get() == nthreads * nloops);
     output(argv[0], "increment", nthreads, nloops, counter, elapsed);
     return 0;
 }
