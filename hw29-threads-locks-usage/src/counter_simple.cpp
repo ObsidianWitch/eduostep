@@ -25,6 +25,10 @@ private:
     std::mutex mutex;
 };
 
+std::ostream& operator<<(std::ostream &stream, SimpleCounter &counter) {
+    return stream << "count=" << counter.get();
+}
+
 void worker(int threadID, SimpleCounter &counter, int nloops) {
     for (int i = 0; i < nloops; ++i) {
         counter.increment();
@@ -41,8 +45,6 @@ int main(int argc, char *argv[]) {
 
     SimpleCounter counter;
     auto elapsed = time_workers(nthreads, worker, std::ref(counter), nloops);
-    std::cout << "program=" << argv[0] << " op=increment"
-              << " nthreads=" << nthreads << " nloops=" << nloops
-              << " count=" << counter.get() << " time=" << elapsed  << std::endl;
+    output(argv[0], "increment", nthreads, nloops, counter, elapsed);
     return 0;
 }

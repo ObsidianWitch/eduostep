@@ -80,13 +80,16 @@ public:
         mutex_.unlock();
         return result;
     }
-
 private:
     Node *root_;
     std::mutex mutex_;
     int size_;
     int height_;
 };
+
+std::ostream& operator<<(std::ostream &stream, BinarySearchTree &tree) {
+    return stream << "size=" << tree.size() << " height=" << tree.height();
+}
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
@@ -100,24 +103,15 @@ int main(int argc, char *argv[]) {
         BinarySearchTree tree;
         auto elapsed = time_workers(nthreads, worker_insert<BinarySearchTree>,
             std::ref(tree), nloops);
-        std::cout << "program=" << argv[0] << " op=insert_rand"
-                  << " nthreads=" << nthreads << " nloops=" << nloops
-                  << " size=" << tree.size() << " height=" << tree.height()
-                  << " time=" << elapsed  << std::endl;
+        output(argv[0], "insert_rand", nthreads, nloops, tree, elapsed);
         elapsed = time_workers(nthreads, worker_lookup<BinarySearchTree>,
             std::ref(tree), nloops);
-        std::cout << "program=" << argv[0] << " op=lookup_rand"
-                  << " nthreads=" << nthreads << " nloops=" << nloops
-                  << " size=" << tree.size() << " height=" << tree.height()
-                  << " time=" << elapsed  << std::endl;
+        output(argv[0], "lookup_rand", nthreads, nloops, tree, elapsed);
     } {
         BinarySearchTree tree;
         auto elapsed = time_workers(nthreads, worker_interleave<BinarySearchTree>,
             std::ref(tree), nloops);
-        std::cout << "program=" << argv[0] << " op=interleave_rand"
-                  << " nthreads=" << nthreads << " nloops=" << nloops
-                  << " size=" << tree.size() << " height=" << tree.height()
-                  << " time=" << elapsed  << std::endl;
+        output(argv[0], "interleave_rand", nthreads, nloops, tree, elapsed);
     }
     return 0;
 }

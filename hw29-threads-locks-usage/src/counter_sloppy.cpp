@@ -6,40 +6,47 @@
 class SloppyCounter {
 public:
     SloppyCounter(int ncpus, int threshold) :
-        threshold(threshold),
-        countGlobal(0), mutexGlobal(),
-        countLocal(ncpus, 0), mutexLocal(ncpus)
+        threshold_(threshold),
+        countGlobal_(0), mutexGlobal_(),
+        countLocal_(ncpus, 0), mutexLocal_(ncpus)
     {}
 
     void increment(int cpuID) {
-        this->mutexLocal[cpuID].lock();
-        this->countLocal[cpuID]++;
-        if (this->countLocal[cpuID] >= this->threshold) {
-            this->update(cpuID);
+        mutexLocal_[cpuID].lock();
+        countLocal_[cpuID]++;
+        if (countLocal_[cpuID] >= threshold_) {
+            update(cpuID);
         }
-        this->mutexLocal[cpuID].unlock();
+        mutexLocal_[cpuID].unlock();
     }
 
     void update(int cpuID) {
-        this->mutexGlobal.lock();
-        this->countGlobal += this->countLocal[cpuID];
-        this->countLocal[cpuID] = 0;
-        this->mutexGlobal.unlock();
+        mutexGlobal_.lock();
+        countGlobal_ += countLocal_[cpuID];
+        countLocal_[cpuID] = 0;
+        mutexGlobal_.unlock();
     }
 
     int get() {
-        this->mutexGlobal.lock();
-        int result = this->countGlobal;
-        this->mutexGlobal.unlock();
+        mutexGlobal_.lock();
+        int result = countGlobal_;
+        mutexGlobal_.unlock();
         return result;
     }
+
+    friend std::ostream& operator<<(std::ostream&, SloppyCounter&);
 private:
-    int threshold;
-    int countGlobal;
-    std::mutex mutexGlobal;
-    std::vector<int> countLocal;
-    std::vector<std::mutex> mutexLocal;
+    int threshold_;
+    int countGlobal_;
+    std::mutex mutexGlobal_;
+    std::vector<int> countLocal_;
+    std::vector<std::mutex> mutexLocal_;
 };
+
+std::ostream& operator<<(std::ostream &stream, SloppyCounter &counter) {
+    return stream << "threshold=" << counter.threshold_
+                  << " count=" << counter.get();
+}
 
 void worker(int threadID, int ncpus, SloppyCounter &counter, int nloops) {
     int cpuID = threadID % ncpus;
@@ -62,9 +69,6 @@ int main(int argc, char *argv[]) {
 
     SloppyCounter counter(ncpus, threshold);
     auto elapsed = time_workers(nthreads, worker, ncpus, std::ref(counter), nloops);
-    std::cout << "program=" << argv[0] << " op=increment"
-              << " nthreads=" << nthreads << " nloops=" << nloops
-              << " threshold=" << threshold << " count=" << counter.get()
-              << " time=" << elapsed << std::endl;
+    output(argv[0], "increment", nthreads, nloops, counter, elapsed);
     return 0;
 }

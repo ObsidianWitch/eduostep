@@ -55,4 +55,14 @@ void worker_interleave(int threadID, Collection &collection, int nloops) {
     }
 }
 
+template<class DataStructure>
+void output(
+    std::string program, std::string worker, int nthreads, int nloops,
+    DataStructure &ds, float elapsed
+) {
+    std::cout << "program=" << program << " op=" << worker
+              << " nthreads=" << nthreads << " nloops=" << nloops
+              << " " << ds << " time=" << elapsed  << std::endl;
+}
+
 #endif // SHARED_HPP
