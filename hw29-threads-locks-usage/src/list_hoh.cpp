@@ -4,10 +4,10 @@
 #include "shared.hpp"
 
 struct Node {
-    int data;
+    int key;
     Node *next;
     std::mutex mutex;
-    Node(int data, Node *next): data(data), next(next), mutex() {}
+    Node(int key, Node *next): key(key), next(next), mutex() {}
 };
 Node END(INT_MAX, NULL);
 
@@ -26,10 +26,10 @@ public:
         mutex_.unlock();
     }
 
-    void insert(int data) {
+    void insert(int key) {
         mutex_.lock();
             head_->mutex.lock();
-                auto *node = new Node(data, NULL);
+                auto *node = new Node(key, NULL);
                 node->mutex.lock();
                     node->next = head_;
                     head_ = node;
@@ -39,12 +39,12 @@ public:
         mutex_.unlock();
     }
 
-    Node* search(int data) {
+    Node* search(int key) {
         mutex_.lock();
         head_->mutex.lock();
         mutex_.unlock();
         auto *result = head_;
-        while (result != &END && data != result->data) {
+        while (result != &END && key != result->key) {
             result->next->mutex.lock();
             result->mutex.unlock();
             result = result->next;

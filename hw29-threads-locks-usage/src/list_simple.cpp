@@ -3,9 +3,9 @@
 #include "shared.hpp"
 
 struct Node {
-    int data;
+    int key;
     Node *next;
-    Node(int data, Node *next): data(data), next(next) {}
+    Node(int key, Node *next): key(key), next(next) {}
 };
 
 class List {
@@ -23,8 +23,8 @@ public:
         mutex_.unlock();
     }
 
-    void insert(int data) {
-        auto *node = new Node(data, NULL);
+    void insert(int key) {
+        auto *node = new Node(key, NULL);
         mutex_.lock();
         node->next = head_;
         head_ = node;
@@ -32,10 +32,10 @@ public:
         mutex_.unlock();
     }
 
-    Node* search(int data) {
+    Node* search(int key) {
         mutex_.lock();
         auto *result = head_;
-        while (result != NULL && data != result->data) {
+        while (result != NULL && key != result->key) {
             result = result->next;
         }
         mutex_.unlock();
