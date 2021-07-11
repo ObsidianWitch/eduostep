@@ -71,26 +71,5 @@ std::ostream& operator<<(std::ostream &stream, List &list) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        std::cerr << "usage: " << argv[0] << " <nthreads> <nloops>" << std::endl;
-        return 1;
-    }
-    auto nthreads = std::stoi(argv[1]);
-    auto nloops = std::stoi(argv[2]);
-
-    {
-        List list;
-        auto elapsed = time_workers(nthreads, worker_insert<List>,
-            std::ref(list), nloops);
-        output(argv[0], "insert_rand", nthreads, nloops, list, elapsed);
-        elapsed = time_workers(nthreads, worker_lookup<List>,
-            std::ref(list), nloops);
-        output(argv[0], "lookup_rand", nthreads, nloops, list, elapsed);
-    } {
-        List list;
-        auto elapsed = time_workers(nthreads, worker_interleave<List>,
-            std::ref(list), nloops);
-        output(argv[0], "interleave_rand", nthreads, nloops, list, elapsed);
-    }
-    return 0;
+    return main_collection<List>(argc, argv);
 }

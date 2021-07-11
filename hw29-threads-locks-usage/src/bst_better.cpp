@@ -92,26 +92,5 @@ std::ostream& operator<<(std::ostream &stream, BinarySearchTree &tree) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc < 3) {
-        std::cerr << "usage: " << argv[0] << " <nthreads> <nloops>" << std::endl;
-        return 1;
-    }
-    auto nthreads = std::stoi(argv[1]);
-    auto nloops = std::stoi(argv[2]);
-
-    {
-        BinarySearchTree tree;
-        auto elapsed = time_workers(nthreads, worker_insert<BinarySearchTree>,
-            std::ref(tree), nloops);
-        output(argv[0], "insert_rand", nthreads, nloops, tree, elapsed);
-        elapsed = time_workers(nthreads, worker_lookup<BinarySearchTree>,
-            std::ref(tree), nloops);
-        output(argv[0], "lookup_rand", nthreads, nloops, tree, elapsed);
-    } {
-        BinarySearchTree tree;
-        auto elapsed = time_workers(nthreads, worker_interleave<BinarySearchTree>,
-            std::ref(tree), nloops);
-        output(argv[0], "interleave_rand", nthreads, nloops, tree, elapsed);
-    }
-    return 0;
+    return main_collection<BinarySearchTree>(argc, argv);
 }
