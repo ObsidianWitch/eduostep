@@ -30,7 +30,7 @@
 - [x] hw29 - [Lock Usage](http://www.cs.wisc.edu/~remzi/OSTEP/threads-locks-usage.pdf)
 - [ ] [Condition Variables](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)
 - [x] hw31 - [Semaphores](http://www.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf)
-- [ ] [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)
+- [ ] hw32 - [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)
 - [ ] [Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)
 
 ### Persistence
