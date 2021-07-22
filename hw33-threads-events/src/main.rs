@@ -1,4 +1,4 @@
-use std::io::prelude::Read;
+use std::io::prelude::*;
 use std::net::{TcpListener, TcpStream};
 
 // ref: https://doc.rust-lang.org/book/ch20-00-final-project-a-web-server.html
@@ -15,4 +15,8 @@ fn handle_connection(mut stream: TcpStream) {
     let mut buffer = [0; 1024]; // cannot handle arbitrary size requests.
     stream.read(&mut buffer).unwrap();
     println!("{}", String::from_utf8_lossy(&buffer));
+
+    let response = "HTTP/1.1 501 Not Implemented\r\n\r\n";
+    stream.write(response.as_bytes()).unwrap();
+    stream.flush().unwrap();
 }
