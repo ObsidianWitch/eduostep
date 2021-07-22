@@ -16,7 +16,12 @@ fn handle_connection(mut stream: TcpStream) {
     stream.read(&mut buffer).unwrap();
     println!("{}", String::from_utf8_lossy(&buffer));
 
-    let response = "HTTP/1.1 501 Not Implemented\r\n\r\n";
+    let file_string = std::fs::read_to_string("public/index.html").unwrap();
+    let response = format!(
+        "HTTP/1.1 200 OK\r\n \
+        Content-Length: {}\r\n\r\n \
+        {}", file_string.len(), file_string
+    );
     stream.write(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
