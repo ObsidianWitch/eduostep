@@ -1,6 +1,6 @@
 Q1. First let’s make sure you understand how the programs generally work, and some of the key options. Study the code in `vector-deadlock.c`, as well as in `main-common.c` and related files. Now, run `./vector-deadlock -n 2 -l 1 -v`, which instantiates two threads (`-n 2`), each of which does one vector add (`-l 1`), and does so in verbose mode (`-v`). Make sure you understand the output. How does the output change from run to run?
 
-Most of the times the first thread executes first and then the second. The opposite happens rarely.
+Most of the time the first thread executes first and then the second. The opposite happens rarely.
 
 Q2. Now add the `-d` flag, and change the number of loops (`-l`) from 1 to higher numbers. What happens? Does the code (always) deadlock?
 
