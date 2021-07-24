@@ -30,11 +30,13 @@ fn handle_http_request(mut stream: TcpStream) {
 }
 
 fn get_page(filepath: &String, status: u32) -> String {
-    let file_string = std::fs::read_to_string(filepath).unwrap(); // TODO handle error
-    let response = format!(
-        "HTTP/1.1 {} _\r\n\
-        Content-Length: {}\r\n\r\n\
-        {}", status, file_string.len(), file_string
+    let body = std::fs::read_to_string(filepath).unwrap(); // TODO handle error
+    return get_response(status, &body);
+}
+
+fn get_response(status: u32, body: &String) -> String {
+    return format!(
+        "HTTP/1.1 {} _\r\nContent-Length: {}\r\n\r\n{}",
+        status, body.len(), body
     );
-    return response;
 }
