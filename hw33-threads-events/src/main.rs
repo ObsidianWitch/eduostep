@@ -51,7 +51,9 @@ fn get_error_page<Str: AsRef<str>>(status: u32, reason: Str) -> String {
 }
 
 fn get_page<Str: AsRef<str>>(filepath: Str) -> Result<String, std::io::Error> {
-    let filepath = format!("public/{}", filepath.as_ref());
+    let mut filepath = format!("public/{}", filepath.as_ref());
+    if filepath == "public//" { filepath.push_str("index.html") }
+
     let filepath = std::fs::canonicalize(filepath)?;
     let basepath = std::fs::canonicalize("public")?;
     if !filepath.starts_with(basepath) {
@@ -60,6 +62,7 @@ fn get_page<Str: AsRef<str>>(filepath: Str) -> Result<String, std::io::Error> {
             "Cannot access files outside public/"
         ));
     }
+
     let body = std::fs::read_to_string(&filepath)?;
     return Ok(new_response(200, "Ok", &body));
 }
