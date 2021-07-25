@@ -38,8 +38,7 @@ fn handle_http_request(mut stream: TcpStream) {
     stream.flush().unwrap();
 }
 
-fn get_error_page<Str: AsRef<str>>(status: u32, reason: Str) -> String {
-    let reason = reason.as_ref();
+fn get_error_page(status: u32, reason: &str) -> String {
     let body = format!(
         "<!DOCTYPE html>
         <html lang=\"en\">
@@ -50,8 +49,8 @@ fn get_error_page<Str: AsRef<str>>(status: u32, reason: Str) -> String {
     return new_response(status, reason, &body);
 }
 
-fn get_page<Str: AsRef<str>>(filepath: Str) -> Result<String, std::io::Error> {
-    let mut filepath = format!("public/{}", filepath.as_ref());
+fn get_page(filepath: &str) -> Result<String, std::io::Error> {
+    let mut filepath = format!("public/{}", filepath);
     if filepath == "public//" { filepath.push_str("index.html") }
 
     let filepath = std::fs::canonicalize(filepath)?;
@@ -67,9 +66,7 @@ fn get_page<Str: AsRef<str>>(filepath: Str) -> Result<String, std::io::Error> {
     return Ok(new_response(200, "Ok", &body));
 }
 
-fn new_response<Str: AsRef<str>>(status: u32, reason: Str, body: Str) -> String {
-    let reason = reason.as_ref();
-    let body = body.as_ref();
+fn new_response(status: u32, reason: &str, body: &str) -> String {
     return format!(
         "HTTP/1.1 {} {}\r\nContent-Length: {}\r\n\r\n{}",
         status, reason, body.len(), body
