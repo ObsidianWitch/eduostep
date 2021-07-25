@@ -1,5 +1,6 @@
 use std::io::{BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream};
+use std::path::PathBuf;
 use std::time::Duration;
 
 // ref: https://doc.rust-lang.org/book/ch20-00-final-project-a-web-server.html
@@ -49,10 +50,15 @@ fn get_error_page(status: u32, reason: &str) -> String {
     return new_response(status, reason, &body);
 }
 
-fn get_page(filepath: &str) -> Result<String, std::io::Error> {
-    let mut filepath = format!("public/{}", filepath);
-    if filepath == "public//" { filepath.push_str("index.html") }
+fn get_page(filepath: &str) -> std::io::Result<String> {
+    let filepath = if filepath == "/" { "index.html" } else { filepath };
+    let filepath = format!("public/{}", filepath);
+    let filepath = check_path(&filepath)?;
+    let body = std::fs::read_to_string(&filepath)?;
+    return Ok(new_response(200, "Ok", &body));
+}
 
+fn check_path(filepath: &str) -> std::io::Result<PathBuf> {
     let filepath = std::fs::canonicalize(filepath)?;
     let basepath = std::fs::canonicalize("public")?;
     if !filepath.starts_with(basepath) {
@@ -61,9 +67,7 @@ fn get_page(filepath: &str) -> Result<String, std::io::Error> {
             "Cannot access files outside public/"
         ));
     }
-
-    let body = std::fs::read_to_string(&filepath)?;
-    return Ok(new_response(200, "Ok", &body));
+    return Ok(filepath);
 }
 
 fn new_response(status: u32, reason: &str, body: &str) -> String {
