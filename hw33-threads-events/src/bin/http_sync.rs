@@ -1,22 +1,23 @@
-use std::io::{BufRead, BufReader, Write};
+use std::io::{prelude::*, BufReader};
 use std::net::{TcpListener, TcpStream};
 use std::time::Duration;
 use hw33::*;
 
 // ref: https://doc.rust-lang.org/book/ch20-00-final-project-a-web-server.html
-fn main() {
-    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-    println!("Server: http://{}/", listener.local_addr().unwrap());
+fn main() -> std::io::Result<()> {
+    let listener = TcpListener::bind("127.0.0.1:0")?;
+    println!("Server: http://{}/", listener.local_addr()?);
 
     for stream in listener.incoming() {
-        handle_http_request(stream.unwrap());
+        let stream = stream?;
+        stream.set_read_timeout(Some(Duration::new(30, 0)))?;
+        stream.set_write_timeout(Some(Duration::new(30, 0)))?;
+        handle_http_request(stream);
     }
+    return Ok(());
 }
 
 fn handle_http_request(mut stream: TcpStream) {
-    stream.set_read_timeout(Some(Duration::new(30, 0))).unwrap();
-    stream.set_write_timeout(Some(Duration::new(30, 0))).unwrap();
-
     let mut reader = BufReader::new(&stream);
     let mut status_line = String::new();
     let response = if let Err(_) = reader.read_line(&mut status_line) {
