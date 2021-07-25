@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "hw33-threads-events"
+name = "hw33"
 version = "0.1.0"
