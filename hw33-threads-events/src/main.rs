@@ -20,13 +20,16 @@ fn handle_http_request(mut stream: TcpStream) {
     let mut status_line = String::new();
     reader.read_line(&mut status_line).unwrap(); // TODO handle error
     println!("{}", status_line);
+    let status_line: Vec<&str> = status_line.split(' ').collect();
 
-    // TODO regex "GET \/.* HTTP\/1.1\r\n
-    let response = if status_line.starts_with("GET") {
-        let path = status_line.split(' ').nth(1).unwrap();
-        get_page(path)
-    } else {
+    let response = if status_line.get(0) != Some(&"GET") {
         get_error_page(501, "Not Implemented")
+    } else if status_line.get(2) != Some(&"HTTP/1.1\r\n") {
+        get_error_page(400, "Bad Request")
+    } else if let Some(path) = status_line.get(1) {
+        get_page(path).unwrap_or_else(|_e| get_error_page(404, "Not Found"))
+    } else {
+        get_error_page(400, "Bad Request")
     };
     println!("{}", response);
     println!("---");
@@ -44,16 +47,11 @@ fn get_error_page<Str: AsRef<str>>(status: u32, reason: Str) -> String {
     return new_response(status, reason, &body);
 }
 
-fn get_page<Str: AsRef<str>>(filepath: Str) -> String {
+fn get_page<Str: AsRef<str>>(filepath: Str) -> Result<String, std::io::Error> {
     let filepath = format!("public/{}", filepath.as_ref());
     // TODO check absolute(filepath) is contained in absolute("public/")
-    return match std::fs::read_to_string(&filepath) {
-        Ok(body) => new_response(200, "Ok", &body),
-        Err(e) => {
-            eprintln!("get_page({}): {}", &filepath, e);
-            get_error_page(404, "Not Found")
-        },
-    }
+    let body = std::fs::read_to_string(&filepath)?;
+    return Ok(new_response(200, "Ok", &body));
 }
 
 fn new_response<Str: AsRef<str>>(status: u32, reason: Str, body: Str) -> String {
