@@ -21,11 +21,12 @@ fn handle_http_request(mut stream: TcpStream) {
     reader.read_line(&mut status_line).unwrap(); // TODO handle error
     println!("{}", status_line);
 
-    // TODO handle arbitrary GET requests
-    let response = if status_line.starts_with("GET / HTTP/1.1\r\n") {
-        get_page(&"public/index.html".to_string(), 200)
+    // TODO regex "GET \/.* HTTP\/1.1\r\n
+    let response = if status_line.starts_with("GET") {
+        let path = status_line.split(' ').nth(1).unwrap();
+        get_page(path)
     } else {
-        get_page(&"public/404.html".to_string(), 404)
+        get_error_page(501, "Not Implemented")
     };
     println!("{}", response);
     println!("---");
@@ -33,14 +34,33 @@ fn handle_http_request(mut stream: TcpStream) {
     stream.flush().unwrap();
 }
 
-fn get_page(filepath: &String, status: u32) -> String {
-    let body = std::fs::read_to_string(filepath).unwrap(); // TODO handle error
-    return new_response(status, &body);
+fn get_error_page<Str: AsRef<str>>(status: u32, reason: Str) -> String {
+    let reason = reason.as_ref();
+    let body = format!("<!DOCTYPE html>
+        <html lang=\"en\">
+        <head><meta charset=\"utf-8\"><title>{0} {1}</title></head>
+        <body><h1>{0} {1}</h1></body>
+        </html>", status, reason);
+    return new_response(status, reason, &body);
 }
 
-fn new_response(status: u32, body: &String) -> String {
+fn get_page<Str: AsRef<str>>(filepath: Str) -> String {
+    let filepath = format!("public/{}", filepath.as_ref());
+    // TODO check absolute(filepath) is contained in absolute("public/")
+    return match std::fs::read_to_string(&filepath) {
+        Ok(body) => new_response(200, "Ok", &body),
+        Err(e) => {
+            eprintln!("get_page({}): {}", &filepath, e);
+            get_error_page(404, "Not Found")
+        },
+    }
+}
+
+fn new_response<Str: AsRef<str>>(status: u32, reason: Str, body: Str) -> String {
+    let reason = reason.as_ref();
+    let body = body.as_ref();
     return format!(
-        "HTTP/1.1 {} _\r\nContent-Length: {}\r\n\r\n{}",
-        status, body.len(), body
+        "HTTP/1.1 {} {}\r\nContent-Length: {}\r\n\r\n{}",
+        status, reason, body.len(), body
     );
 }
