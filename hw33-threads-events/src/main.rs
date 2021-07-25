@@ -28,9 +28,7 @@ fn handle_http_request(mut stream: TcpStream) {
         } else if status_line.get(2) != Some(&"HTTP/1.1\r\n") {
             get_error_page(400, "Bad Request")
         } else if let Some(path) = status_line.get(1) {
-            get_page(path).unwrap_or_else(|_|
-                get_error_page(404, "Not Found")
-            )
+            get_page(path).unwrap_or_else(|_| get_error_page(404, "Not Found"))
         } else {
             get_error_page(400, "Bad Request")
         }
@@ -54,7 +52,14 @@ fn get_error_page<Str: AsRef<str>>(status: u32, reason: Str) -> String {
 
 fn get_page<Str: AsRef<str>>(filepath: Str) -> Result<String, std::io::Error> {
     let filepath = format!("public/{}", filepath.as_ref());
-    // TODO check absolute(filepath) is contained in absolute("public/")
+    let filepath = std::fs::canonicalize(filepath)?;
+    let basepath = std::fs::canonicalize("public")?;
+    if !filepath.starts_with(basepath) {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::PermissionDenied,
+            "Cannot access files outside public/"
+        ));
+    }
     let body = std::fs::read_to_string(&filepath)?;
     return Ok(new_response(200, "Ok", &body));
 }
