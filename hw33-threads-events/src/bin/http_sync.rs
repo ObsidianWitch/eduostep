@@ -17,7 +17,7 @@ fn main() -> std::io::Result<()> {
 fn handle_http_request(mut stream: TcpStream) {
     let mut reader = BufReader::new(&stream);
     let mut status_line = String::new();
-    let response = if let Err(_) = reader.read_line(&mut status_line) {
+    let response = if reader.read_line(&mut status_line).is_err() {
         get_error_page(500, "Internal Server Error")
     } else {
         println!("{}", status_line);
@@ -34,7 +34,7 @@ fn handle_http_request(mut stream: TcpStream) {
         }
     };
     println!("{}\n---", response);
-    stream.write(response.as_bytes()).unwrap();
+    stream.write_all(response.as_bytes()).unwrap();
     stream.flush().unwrap();
 }
 
