@@ -31,7 +31,7 @@
 - [ ] [Condition Variables](http://www.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf)
 - [x] hw31 - [Semaphores](http://www.cs.wisc.edu/~remzi/OSTEP/threads-sema.pdf)
 - [x] hw32 - [Concurrency Bugs](http://www.cs.wisc.edu/~remzi/OSTEP/threads-bugs.pdf)
-- [ ] hw33 - [Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)
+- [x] hw33 - [Event-based Concurrency](http://www.cs.wisc.edu/~remzi/OSTEP/threads-events.pdf)
 
 ### Persistence
 
