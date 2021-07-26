@@ -1,6 +1,7 @@
 use async_std::prelude::*;
 use async_std::io::{timeout, BufReader};
 use async_std::net::{TcpListener, TcpStream};
+use futures::stream::StreamExt;
 use std::time::Duration;
 use hw33::*;
 
@@ -8,16 +9,15 @@ use hw33::*;
 // ref: https://docs.rs/async-std
 #[async_std::main]
 async fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:0").await?;
-    let mut incoming = listener.incoming();
+    let listener = TcpListener::bind("127.0.0.1:7878").await?;
     println!("Server: http://{}/", listener.local_addr()?);
 
-    while let Some(stream) = incoming.next().await {
+    listener.incoming().for_each_concurrent(None, |stream| async move {
         timeout(Duration::from_secs(30), async {
             handle_http_request(stream?).await;
             Ok(())
         }).await.ok();
-    }
+    }).await;
     return Ok(());
 }
 
