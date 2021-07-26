@@ -1,5 +1,5 @@
 use async_std::prelude::*;
-use async_std::io::{timeout, BufReader};
+use async_std::io::BufReader;
 use async_std::net::{TcpListener, TcpStream};
 use futures::stream::StreamExt;
 use std::time::Duration;
@@ -13,10 +13,7 @@ async fn main() -> std::io::Result<()> {
     println!("Server: http://{}/", listener.local_addr()?);
 
     listener.incoming().for_each_concurrent(None, |stream| async move {
-        timeout(Duration::from_secs(30), async {
-            handle_http_request(stream?).await;
-            Ok(())
-        }).await.ok();
+        handle_http_request(stream.unwrap()).await;
     }).await;
     return Ok(());
 }
@@ -34,6 +31,7 @@ async fn handle_http_request(mut stream: TcpStream) {
         } else if status_line.get(2) != Some(&"HTTP/1.1\r\n") {
             get_error_page(400, "Bad Request")
         } else if let Some(path) = status_line.get(1) {
+            let path = route(path).await;
             get_page(path).await.unwrap_or_else(|_| get_error_page(404, "Not Found"))
         } else {
             get_error_page(400, "Bad Request")
@@ -44,8 +42,18 @@ async fn handle_http_request(mut stream: TcpStream) {
     stream.flush().await.unwrap();
 }
 
+async fn route(path: &str) -> &str {
+    return match path {
+        "/" => "/index.html",
+        "/sleep" => {
+            async_std::task::sleep(Duration::from_millis(100)).await;
+            "/index.html"
+        },
+        path => path,
+    };
+}
+
 async fn get_page(filepath: &str) -> std::io::Result<String> {
-    let filepath = if filepath == "/" { "index.html" } else { filepath };
     let filepath = format!("public/{}", filepath);
     let filepath = check_path(&filepath)?;
     let body = async_std::fs::read_to_string(&filepath).await?;
