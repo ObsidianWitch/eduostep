@@ -18,9 +18,9 @@ done
 
 # Benchmark synchronous and asynchronous http server with 1000 requests sent in
 # parallel (1 request/CPU). Two types of requests are tested: requests without
-# any sleep (fast) and requests with 100ms of sleep (slow). Both servers perform
-# similarly on fast requests, but the async server perform better than the sync
-# server when requests are slower.
+# any sleep and requests with 100ms of sleep (simulate latency). Both servers
+# perform similarly on fast requests, but the async server perform better than
+# the sync server when requests are slower.
 #
 # http_sync /
 # real 0m5.410s
