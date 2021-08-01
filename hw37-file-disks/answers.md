@@ -1,6 +1,32 @@
 Q1. Compute the seek, rotation, and transfer times for the following sets of requests: `-a 0`, `-a 6`, `-a 30`, `-a 7,30,8`, and finally `-a 10,11,12,13`.
 
+```sh
+$ ./disk.py -a 0
+# 0: seek=0 rotate=15+(5*30)=165 transfer=30
+
+$ ./disk.py -a 6
+# 6: seek=0 rotate=15+(11*30)=345 transfer=30
+
+$ ./disk.py -a 30
+# 30: seek=2*40=80 rotate=15+(11*30)-seek=265 transfer=30
+
+$ ./disk.py -a 7,30,8
+# 7:  seek=0   rotate=15             transfer=30 total=45
+# 30: seek=80  rotate=(10*30)-80=220 transfer=30 total=330
+# 8:  seek=80  rotate=360+30-80=310  transfer=30 total=420
+# t:  seek=160 rotate=545            transfer=90 total=795
+
+$ ./disk.py -a 10,11,12,13
+# 10: seek=0  rotate=15+(3*30)=105 transfer=30  total=135
+# 11: seek=0  rotate=0             transfer=30  total=30
+# 12: seek=40 rotate=360-40=320    transfer=30  total=390
+# 13: seek=0  rotate=0             transfer=30  total=30
+# t:  seek=40 rotate=425           transfer=120 total=585
+```
+
 Q2. Do the same requests above, but change the seek rate to different values: `-S 2`, `-S 4`, `-S 8`, `-S 10`, `-S 40`, `-S 0.1`. How do the times change?
+
+Higher seek rates allow to avoid missing some sectors (different tracks, non-aligned, non-adjacent) during seeks and thus reduce rotation time on top of reducing seek time.
 
 Q3. Do the same requests above, but change the rotation rate: `-R 0.1`, `-R 0.5`, `-R 0.01`. How do the times change?
 
