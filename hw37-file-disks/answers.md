@@ -34,6 +34,14 @@ Rotation and transfer times are inversely proportional to the rotation rate.
 
 Q4. FIFO is not always best, e.g., with the request stream `-a 7,30,8`, what order should the requests be processed in? Run the shortest seek-time first (SSTF) scheduler (`-p SSTF`) on this workload; how long should it take (seek, rotation, transfer) for each request to be served?
 
+```sh
+$ ./disk.py -a 7,30,8 -p SSTF
+# 7:  seek=0  rotate=15            transfer=30 total=45
+# 8:  seek=0  rotate=0             transfer=30 total=30
+# 30: seek=80 rotate=(9*30)-80=190 transfer=30 total=300
+# t:  seek=80 rotate=205           transfer=90 total=375
+```
+
 Q5. Now use the shortest access-time first (SATF) scheduler (`-p SATF`). Does it make any difference for `-a 7,30,8` workload? Find a set of requests where SATF outperforms SSTF; more generally, when is SATF better than SSTF?
 
 Q6. Here is a request stream to try: `-a 10,11,12,13`. What goes poorly when it runs? Try adding track skew to address this problem (-o skew). Given the default seek rate, what should the skew be to maximize performance? What about for different seek rates (e.g., `-S 2`, `-S 4`)? In general, could you write a formula to figure out the skew?
