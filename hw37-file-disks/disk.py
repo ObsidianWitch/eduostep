@@ -700,7 +700,7 @@ class Disk:
 
     def PrintStats(self):
         if self.compute == True:
-            print('\nTOTALS      Seek:%3d  Rotate:%3d  Transfer:%3d  Total:%4d\n' % (self.seekTotal, self.rotTotal, self.xferTotal, self.timer))
+            print('\nTOTALS      Seek:%d  Rotate:%d  Transfer:%d  Total:%d\n' % (self.seekTotal, self.rotTotal, self.xferTotal, self.timer))
 
 # END: class Disk
 
