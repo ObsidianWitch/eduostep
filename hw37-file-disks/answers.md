@@ -26,7 +26,7 @@ $ ./disk.py -a 10,11,12,13
 
 Q2. Do the same requests above, but change the seek rate to different values: `-S 2`, `-S 4`, `-S 8`, `-S 10`, `-S 40`, `-S 0.1`. How do the times change?
 
-Higher seek rates allow to avoid missing some sectors (different tracks, non-aligned, non-adjacent) during seeks and thus reduce rotation time on top of reducing seek time.
+Higher seek rates allow to avoid missing some sectors during seeks and thus reduce rotation time on top of reducing seek time.
 
 Q3. Do the same requests above, but change the rotation rate: `-R 0.1`, `-R 0.5`, `-R 0.01`. How do the times change?
 
@@ -44,7 +44,18 @@ $ ./disk.py -a 7,30,8 -p SSTF
 
 Q5. Now use the shortest access-time first (SATF) scheduler (`-p SATF`). Does it make any difference for `-a 7,30,8` workload? Find a set of requests where SATF outperforms SSTF; more generally, when is SATF better than SSTF?
 
+* same results for the SATF and and SSTF policies on the `-a 7,30,8` workload
+* example of workload where SATF outperforms SSTF: `-a 6,20,33`. SATF can take seek speed and rotation speed into account to decide whether it's beneficial to go to a farther track instead of the nearest one.
+* SATF performs better than SSTF when seek is faster than rotation.
+
 Q6. Here is a request stream to try: `-a 10,11,12,13`. What goes poorly when it runs? Try adding track skew to address this problem (-o skew). Given the default seek rate, what should the skew be to maximize performance? What about for different seek rates (e.g., `-S 2`, `-S 4`)? In general, could you write a formula to figure out the skew?
+
+* the head must wait almost an entire rotation because the requested block (12) has been passed during seek even though the workload is sequential
+* `./disk.py -a 10,11,12,13 -o 2 -c`
+* ```py
+skew * blocks_angle / rotation_speed > track_width / seek_speed
+skew = math.ceil((track_width * rotation_speed) / (seek_speed * blocks_angle))
+```
 
 Q7. Specify a disk with different density per zone, e.g., `-z 10,20,30`, which specifies the angular difference between blocks on the outer, middle, and inner tracks. Run some random requests (e.g., `-a -1 -A 5,-1,0`, which specifies that random requests should be used via the `-a -1` flag and that five requests ranging from 0 to the max be generated), and compute the seek, rotation, and transfer times. Use different random seeds. What is the bandwidth (in sectors per unit time) on the outer, middle, and inner tracks?
 
