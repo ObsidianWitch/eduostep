@@ -11,7 +11,7 @@ for line in sys.stdin:
     addr = line[0]
     input = line[1].split(':')
     xlabel, input = input[0], float(input[1])
-    times = dict( kwarg.split(':') for kwarg in line[3:-1] )
+    times = dict( kwarg.split(':') for kwarg in line[3:] )
     if addr not in data:
         data[addr] = {}
     for k, v in times.items():

@@ -61,6 +61,16 @@ Q7. Specify a disk with different density per zone, e.g., `-z 10,20,30`, which s
 
 Q8. A scheduling window determines how many requests the disk can examine at once. Generate random workloads (e.g., `-A 1000,-1,0`, with different seeds) and see how long the SATF scheduler takes when the scheduling window is changed from 1 up to the number of requests. How big of a window is needed to maximize performance? Hint: use the `-c` flag and don’t turn on graphics (`-G`) to run these quickly. When the scheduling window is set to 1, does it matter which policy you are using?
 
+```sh
+for window in 1 {10..1000..10}; do
+    ./disk.py -A '1000,-1,0' -p SATF -w "$window" -c \
+        | awk '/window/{input=$3} /TOTALS/{print "Window:"input, $5}'
+done
+```
+
+* For this example (`seed=0`), max performance is reached w/ a `window≈170`. The bigger the window is, the more the scheduler will have to wait before servicing requests which will add latency. Increasing the window will also increase the number of requests to sort, which might also contribute to the latency.
+* A scheduling window of 1 is equivalent to using FIFO regardless of the chosen policy.
+
 Q9. Create a series of requests to starve a particular request, assuming an SATF policy. Given that sequence, how does it perform if you use a bounded SATF (BSATF) scheduling approach? In this approach, you specify the scheduling window (e.g., `-w 4`); the scheduler only moves onto the next window of requests when all requests in the current window have been serviced. Does this solve starvation? How does it perform, as compared to SATF? In general, how should a disk make this trade-off between performance and starvation avoidance?
 
 Q10. All the scheduling policies we have looked at thus far are greedy; they pick the next best option instead of looking for an optimal schedule. Can you find a set of requests in which greedy is not optimal?
