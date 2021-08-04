@@ -73,4 +73,7 @@ done
 
 Q9. Create a series of requests to starve a particular request, assuming an SATF policy. Given that sequence, how does it perform if you use a bounded SATF (BSATF) scheduling approach? In this approach, you specify the scheduling window (e.g., `-w 4`); the scheduler only moves onto the next window of requests when all requests in the current window have been serviced. Does this solve starvation? How does it perform, as compared to SATF? In general, how should a disk make this trade-off between performance and starvation avoidance?
 
+* `./disk.py -p SATF -a 7,19,8,9,10,11,0,1,2,3,4,5,6,7,8 -c`
+* The total time increases w/ BSATF and a window of 4 blocks, but the request for block 19 does not starve.
+
 Q10. All the scheduling policies we have looked at thus far are greedy; they pick the next best option instead of looking for an optimal schedule. Can you find a set of requests in which greedy is not optimal?
