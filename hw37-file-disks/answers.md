@@ -35,6 +35,9 @@ Rotation and transfer times are inversely proportional to the rotation rate.
 Q4. FIFO is not always best, e.g., with the request stream `-a 7,30,8`, what order should the requests be processed in? Run the shortest seek-time first (SSTF) scheduler (`-p SSTF`) on this workload; how long should it take (seek, rotation, transfer) for each request to be served?
 
 ```sh
+# FIFO: 7->30->8
+# SSTF: 7->8->30
+
 $ ./disk.py -a 7,30,8 -p SSTF
 # 7:  seek=0  rotate=15            transfer=30 total=45
 # 8:  seek=0  rotate=0             transfer=30 total=30
@@ -46,7 +49,7 @@ Q5. Now use the shortest access-time first (SATF) scheduler (`-p SATF`). Does it
 
 * same results for the SATF and and SSTF policies on the `-a 7,30,8` workload
 * example of workload where SATF outperforms SSTF: `-a 6,20,33`. SATF can take seek speed and rotation speed into account to decide whether it's beneficial to go to a farther track instead of the nearest one.
-* SATF performs better than SSTF when seek is faster than rotation.
+* SATF performs better than SSTF when seeking is faster than rotation.
 
 Q6. Here is a request stream to try: `-a 10,11,12,13`. What goes poorly when it runs? Try adding track skew to address this problem (-o skew). Given the default seek rate, what should the skew be to maximize performance? What about for different seek rates (e.g., `-S 2`, `-S 4`)? In general, could you write a formula to figure out the skew?
 
@@ -58,6 +61,17 @@ skew = math.ceil((track_width * rotation_speed) / (seek_speed * blocks_angle))
 ```
 
 Q7. Specify a disk with different density per zone, e.g., `-z 10,20,30`, which specifies the angular difference between blocks on the outer, middle, and inner tracks. Run some random requests (e.g., `-a -1 -A 5,-1,0`, which specifies that random requests should be used via the `-a -1` flag and that five requests ranging from 0 to the max be generated), and compute the seek, rotation, and transfer times. Use different random seeds. What is the bandwidth (in sectors per unit time) on the outer, middle, and inner tracks?
+
+```
+angular_speed = 1 degree/time_unit
+z1 = 10 degrees/sector
+z2 = 20 degrees/sector
+z3 = 30 degrees/sector
+
+z1_transfer_speed = angular_speed / z1 = 0.100 sectors/time_unit
+z2_transfer_speed = 0.050 sectors/time_unit
+z3_transfer_speed = 0.033 sectors/time_unit
+```
 
 Q8. A scheduling window determines how many requests the disk can examine at once. Generate random workloads (e.g., `-A 1000,-1,0`, with different seeds) and see how long the SATF scheduler takes when the scheduling window is changed from 1 up to the number of requests. How big of a window is needed to maximize performance? Hint: use the `-c` flag and don’t turn on graphics (`-G`) to run these quickly. When the scheduling window is set to 1, does it matter which policy you are using?
 
@@ -77,3 +91,11 @@ Q9. Create a series of requests to starve a particular request, assuming an SATF
 * The total time increases w/ BSATF and a window of 4 blocks, but the request for block 19 does not starve.
 
 Q10. All the scheduling policies we have looked at thus far are greedy; they pick the next best option instead of looking for an optimal schedule. Can you find a set of requests in which greedy is not optimal?
+
+```sh
+$ ./disk.py -a 20,34,35 -p FIFO -c # total=525
+$ ./disk.py -a 20,34,35 -p SSTF -c # total=495
+$ ./disk.py -a 20,34,35 -p SATF -c # total=495
+
+$ ./disk.py -a 34,35,20 -p FIFO -c # optimal order, total=435
+```
