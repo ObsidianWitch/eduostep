@@ -36,7 +36,7 @@
 ### Persistence
 
 - [x] hw37 - [Hard Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-disks.pdf)
-- [ ] [RAID](http://www.cs.wisc.edu/~remzi/OSTEP/file-raid.pdf)
+- [ ] hw38 - [RAID](http://www.cs.wisc.edu/~remzi/OSTEP/file-raid.pdf)
 - [ ] [FS Intro](http://www.cs.wisc.edu/~remzi/OSTEP/file-intro.pdf)
 - [ ] [FS Implementation](http://www.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf)
 - [ ] [Fast File System](http://www.cs.wisc.edu/~remzi/OSTEP/file-ffs.pdf)
