@@ -54,15 +54,17 @@ Q4. Now use the reverse flag but increase the size of each request with the `-S`
 
 I'm assuming a workload of sequential writes (`-W seq -w 100`) for these questions.
 
-| level →          | L0       |||| L1        |||| L4 & L5        |||
-|------------------|----|---|---||---|----|----||-----|-----|------|
+```
+| level →          |     L0     ||     L1      ||     L4 & L5      |
 | size (sectors) ↓ | r  | w | t || r | w  | t  || r   | w   | t    |
+|------------------|----|---|---||---|----|----||-----|-----|------|
 | 4k (1)           | 0  | 1 | 1 || 0 | 2  | 2  || 2   | 2   | 4    |
 | 8k (2)           | 0  | 2 | 2 || 0 | 4  | 4  || 1;4 | 3;4 | 4;8  |
 | 12k (3)          | 0  | 3 | 3 || 0 | 6  | 6  || 0   | 4   | 4    |
 | 16k (4)          | 0  | 4 | 4 || 0 | 8  | 8  || 2   | 6   | 8    |
 | 20k (5)          | 0  | 5 | 5 || 0 | 10 | 10 || 1;4 | 7;8 | 8;12 |
 | 24k (6)          | 0  | 6 | 6 || 0 | 12 | 12 || 0   | 8   | 8    |
+```
 
 * `L0_total_ops = request_size / block_size`
 * `L1_total_ops = ncopies * request_size / block_size`
@@ -119,6 +121,8 @@ Q7. Do the same as above, but use all writes (`-w 100`) instead of reads. How do
 
 Q8. Run the timing mode one last time, but this time with a sequential workload (`-W sequential`). How does the performance vary with RAID level, and when doing reads versus writes? How about when varying the size of each request? What size should you write to a RAID when using RAID-4 or RAID-5?
 
-* ![plot seq read](plot-q8r.png)
-* ![plot seq write](plot-q8w.png)
-* efficient request size for RAID-4 and RAID-5: see q4
+![plot seq read](plot-q8r.png)
+
+![plot seq write](plot-q8w.png)
+
+* Efficient request size for RAID-4 and RAID-5: see q4.
