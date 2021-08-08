@@ -52,6 +52,22 @@ Q3. Do the same as above, but use the `-r` flag to reverse the nature of each pr
 
 Q4. Now use the reverse flag but increase the size of each request with the `-S` flag. Try specifying sizes of 8k, 12k, and 16k, while varying the RAID level. What happens to the underlying I/O pattern when the size of the request increases? Make sure to try this with the sequential workload too (`-W` sequential); for what request sizes are RAID-4 and RAID-5 much more I/O efficient?
 
+I'm assuming a workload of sequential writes (`-W seq -w 100`) for these questions.
+
+| level →          | L0       |||| L1        |||| L4 & L5        |||
+|------------------|----|---|---||---|----|----||-----|-----|------|
+| size (sectors) ↓ | r  | w | t || r | w  | t  || r   | w   | t    |
+| 4k (1)           | 0  | 1 | 1 || 0 | 2  | 2  || 2   | 2   | 4    |
+| 8k (2)           | 0  | 2 | 2 || 0 | 4  | 4  || 1;4 | 3;4 | 4;8  |
+| 12k (3)          | 0  | 3 | 3 || 0 | 6  | 6  || 0   | 4   | 4    |
+| 16k (4)          | 0  | 4 | 4 || 0 | 8  | 8  || 2   | 6   | 8    |
+| 20k (5)          | 0  | 5 | 5 || 0 | 10 | 10 || 1;4 | 7;8 | 8;12 |
+| 24k (6)          | 0  | 6 | 6 || 0 | 12 | 12 || 0   | 8   | 8    |
+
+* `L0_total_ops = request_size / block_size`
+* `L1_total_ops = ncopies * request_size / block_size`
+* RAID-4 and RAID-5 are more efficient when `(request_size / block_size) % (ndisks - 1) == 0`
+
 Q5. Use the timing mode of the simulator (`-t`) to estimate the performance of 100 random reads to the RAID, while varying the RAID levels, using 4 disks.
 
 Q6. Do the same as above, but increase the number of disks. How does the performance of each RAID level scale as the number of disks increases?
