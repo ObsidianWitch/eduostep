@@ -5,4 +5,4 @@ clean:
 
 out/%: src/%.cpp src/*.hpp
 	mkdir -p out/
-	g++ -Wall src/$*.cpp -o out/$*
+	g++ -Wall -O3 src/$*.cpp -o out/$*

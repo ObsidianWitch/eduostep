@@ -5,13 +5,13 @@
 #include <cerrno> // errno
 #include <cstdlib> // exit()
 
-void error(const char *msg) {
-    perror(msg);
+void panic(std::string msg) {
+    perror(msg.c_str());
     exit(EXIT_FAILURE);
 }
 
-void error_if(bool failure, const char *msg) {
-    if(failure) { error(msg); }
+void panic_if(bool failure, std::string msg) {
+    if(failure) { panic(msg); }
 }
 
 #endif // SHARED_HPP

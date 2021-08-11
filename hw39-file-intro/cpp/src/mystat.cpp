@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     }
 
     struct stat statbuf;
-    error_if(lstat(argv[1], &statbuf) < 0, "main:lstat");
+    panic_if(lstat(argv[1], &statbuf) < 0, "main:lstat");
     std::cout << "File:" << argv[1]
               << " Size:" << statbuf.st_size
               << " Blocks:" << statbuf.st_blocks
