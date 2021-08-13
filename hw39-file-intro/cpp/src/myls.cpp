@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
         panic_if(errno != 0, "main:readdir");
         panic_if(closedir(dir_stream) < 0, "main:closedir");
     } else if (errno == ENOTDIR) {
+        errno = 0;
         print_one(path, verbose);
     } else {
         panic("main:opendir:" + path.string());
