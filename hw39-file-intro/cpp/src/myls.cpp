@@ -20,9 +20,9 @@ void print_one(fs::path path, bool verbose) {
         std::cout << std::oct << statbuf.st_mode << std::dec
             << "\t" << statbuf.st_nlink << "\t" << statbuf.st_uid
             << "\t" << statbuf.st_gid << "\t" << put_time(statbuf.st_mtime)
-            << "\t" << path.filename() << std::endl;
+            << "\t" << path.filename().string() << std::endl;
     } else {
-        std::cout << path << std::endl;
+        std::cout << path.string() << std::endl;
     }
 }
 
