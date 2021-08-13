@@ -1,16 +1,19 @@
 #include <iostream>
 #include <filesystem>
 #include <queue>
+#include <functional>
 #include <cstring>
 #include <dirent.h>
 #include "shared.hpp"
 
 namespace fs = std::filesystem;
 
-void walk(fs::path root) {
+std::function<fs::path()> walk_generator(fs::path root) {
     std::queue<fs::path> queue;
     queue.push(root);
-    while (!queue.empty()) {
+
+    return [=]() mutable -> fs::path {
+        if (queue.empty()) { return fs::path(); }
         auto path = queue.front(); queue.pop();
         auto dir_stream = opendir(path.c_str());
         if (dir_stream != NULL) {
@@ -25,11 +28,11 @@ void walk(fs::path root) {
             panic_if(closedir(dir_stream) < 0, "walk:closedir");
         } else if (errno == ENOTDIR) {
             errno = 0;
-            std::cout << path << std::endl;
         } else {
             panic("walk:opendir:" + path.string());
         }
-    }
+        return path;
+    };
 }
 
 // 4. Recursive Search: Write a program that prints out the names of each file
@@ -44,7 +47,11 @@ void walk(fs::path root) {
 int main(int argc, char *argv[]) {
     fs::path root = (argc < 2) ? "." : argv[1];
 
-    walk(root);
+    fs::path path;
+    auto walk = walk_generator(root);
+    while (!(path = walk()).empty()) {
+        std::cout << path << std::endl;
+    }
 
     return 0;
 }
