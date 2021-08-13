@@ -46,11 +46,15 @@ std::function<fs::path()> walk_generator(fs::path root) {
 // out.
 int main(int argc, char *argv[]) {
     fs::path root = (argc < 2) ? "." : argv[1];
+    auto expression = (argc < 3) ? "" : argv[2];
 
     fs::path path;
     auto walk = walk_generator(root);
     while (!(path = walk()).empty()) {
-        std::cout << path << std::endl;
+        auto pathstr = path.string();
+        if (pathstr.find(expression) != std::string::npos) {
+            std::cout << pathstr << std::endl;
+        }
     }
 
     return 0;
