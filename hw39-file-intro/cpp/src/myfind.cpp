@@ -1,29 +1,34 @@
 #include <iostream>
 #include <filesystem>
+#include <queue>
 #include <cstring>
 #include <dirent.h>
 #include "shared.hpp"
 
 namespace fs = std::filesystem;
 
-void walk(fs::path path) {
-    auto dir_stream = opendir(path.c_str());
-    if (dir_stream != NULL) {
-        struct dirent *dir_entry;
-        while ((dir_entry = readdir(dir_stream)) != NULL) {
-            if (
-                strcmp(dir_entry->d_name, ".") == 0
-             || strcmp(dir_entry->d_name, "..") == 0
-            ) { continue; }
-            walk(path / dir_entry->d_name);
+void walk(fs::path root) {
+    std::queue<fs::path> queue;
+    queue.push(root);
+    while (!queue.empty()) {
+        auto path = queue.front(); queue.pop();
+        auto dir_stream = opendir(path.c_str());
+        if (dir_stream != NULL) {
+            struct dirent *dir_entry;
+            while ((dir_entry = readdir(dir_stream)) != NULL) {
+                if (strcmp(dir_entry->d_name, ".") == 0
+                    || strcmp(dir_entry->d_name, "..") == 0)
+                { continue; }
+                queue.push(path / dir_entry->d_name);
+            }
+            panic_if(errno != 0, "walk:readdir");
+            panic_if(closedir(dir_stream) < 0, "walk:closedir");
+        } else if (errno == ENOTDIR) {
+            errno = 0;
+            std::cout << path << std::endl;
+        } else {
+            panic("walk:opendir:" + path.string());
         }
-        panic_if(errno != 0 && errno != ENOTDIR, "walk:readdir");
-        panic_if(closedir(dir_stream) < 0, "walk:closedir");
-    } else if (errno == ENOTDIR) {
-        errno = 0;
-        std::cout << path << std::endl;
-    } else {
-        panic("walk:opendir:" + path.string());
     }
 }
 
