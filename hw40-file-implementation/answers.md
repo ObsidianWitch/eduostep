@@ -171,4 +171,12 @@ The first available block found in the bitmap is allocated.
 
 Q3. Now reduce the number of data blocks in the file system, to very low numbers (say two), and run the simulator for a hundred or so requests. What types of files end up in the file system in this highly-constrained layout? What types of operations would fail?
 
+* the fs tends to contain links and empty files
+* operations allocating data blocks tend to fail, i.e. `write()` and `mkdir()`
+* the last data block never seems to be used
+
 Q4. Now do the same, but with inodes. With very few inodes, what types of operations can succeed? Which will usually fail? What is the final state of the file system likely to be?
+
+* operation relying on no allocation or on data block allocation will usually succeed, i.e. `link()` and `write()`
+* operations requiring the allocation of inodes will usually fail, i.e. `mkdir()` and `creat()`
+* the last inode never seems to be used
