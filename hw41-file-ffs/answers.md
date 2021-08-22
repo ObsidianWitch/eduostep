@@ -1,8 +1,90 @@
 Q1. Examine the file `in.largefile`, and then run the simulator with flag `-f in.largefile` and `-L 4`. The latter sets the large-file exception to 4 blocks. What will the resulting allocation look like? Run with `-c` to check.
 
+```
+$ ./ffs.py -f in.largefile -L 4
+[...]
+group inodes    data
+    0 /a-------- /aaaa----- --------------------
+    1 ---------- aaaa------ --------------------
+    2 ---------- aaaa------ --------------------
+    3 ---------- aaaa------ --------------------
+    4 ---------- aaaa------ --------------------
+    5 ---------- aaaa------ --------------------
+    6 ---------- aaaa------ --------------------
+    7 ---------- aaaa------ --------------------
+    8 ---------- aaaa------ --------------------
+    9 ---------- aaaa------ --------------------
+```
+
 Q2. Now run with `-L 30`. What do you expect to see? Once again, turn on `-c` to see if you were right. You can also use `-S` to see exactly which blocks were allocated to the file `/a`.
 
+```
+$ ./ffs.py -f in.largefile -L 30
+[...]
+group inodes    data
+    0 /a-------- /aaaaaaaaa aaaaaaaaaa aaaaaaaaaa
+    1 ---------- aaaaaaaaaa a--------- ----------
+    2 ---------- ---------- ---------- ----------
+    3 ---------- ---------- ---------- ----------
+    4 ---------- ---------- ---------- ----------
+    5 ---------- ---------- ---------- ----------
+    6 ---------- ---------- ---------- ----------
+    7 ---------- ---------- ---------- ----------
+    8 ---------- ---------- ---------- ----------
+    9 ---------- ---------- ---------- ----------
+```
+
 Q3. Now we will compute some statistics about the file. The first is something we call *filespan*, which is the max distance between any two data blocks of the file or between the inode and any data block. Calculate the filespan of `/a`. Run `ffs.py -f in.largefile -L 4 -T -c` to see what it is. Do the same with `-L 100`. What difference do you expect in filespan as the large-file exception parameter changes from low values to high values?
+
+```
+$ ./ffs.py -f in.largefile -L 4 -T -c
+[...]
+group inodes    data
+    0 /a-------- /aaaa----- ---------- ----------
+    1 ---------- aaaa------ ---------- ----------
+    2 ---------- aaaa------ ---------- ----------
+    3 ---------- aaaa------ ---------- ----------
+    4 ---------- aaaa------ ---------- ----------
+    5 ---------- aaaa------ ---------- ----------
+    6 ---------- aaaa------ ---------- ----------
+    7 ---------- aaaa------ ---------- ----------
+    8 ---------- aaaa------ ---------- ----------
+    9 ---------- aaaa------ ---------- ----------
+
+span: files
+  file:         /a  filespan: 372 (= 8 + (10 * 3) + (10 * 4 * 8) + 10 + 4)
+               avg  filespan: 372.00
+
+span: directories
+  dir:           /  dirspan: 373 (= 9 + (10 * 3) + (10 * 4 * 8) + 10 + 4)
+               avg  dirspan: 373.00
+```
+
+```
+$ ./ffs.py -f in.largefile -L 100 -T -c
+[...]
+group inodes    data
+    0 /a-------- /aaaaaaaaa aaaaaaaaaa aaaaaaaaaa
+    1 ---------- aaaaaaaaaa a--------- ----------
+    2 ---------- ---------- ---------- ----------
+    3 ---------- ---------- ---------- ----------
+    4 ---------- ---------- ---------- ----------
+    5 ---------- ---------- ---------- ----------
+    6 ---------- ---------- ---------- ----------
+    7 ---------- ---------- ---------- ----------
+    8 ---------- ---------- ---------- ----------
+    9 ---------- ---------- ---------- ----------
+
+span: files
+  file:         /a  filespan:  59
+               avg  filespan:  59.00
+
+span: directories
+  dir:           /  dirspan:  60
+               avg  dirspan:  60.00
+```
+
+Let's assume we have allocated both large files and small files in our file system. I expect increasing the exception parameter will reduce the filespan of large files, and increase the filespan of small files.
 
 Q4. Now let’s look at a new input file, `in.manyfiles`. How do you think the FFS policy will lay these files out across groups? (you can run with `-v` to see what files and directories are created, or just `cat in.manyfiles`). Run the simulator with `-c` to see if you were right.
 
