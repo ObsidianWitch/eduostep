@@ -39,7 +39,7 @@
 - [x] hw38 - [RAID](http://www.cs.wisc.edu/~remzi/OSTEP/file-raid.pdf)
 - [x] hw39 - [FS Intro](http://www.cs.wisc.edu/~remzi/OSTEP/file-intro.pdf)
 - [x] hw40 - [FS Implementation](http://www.cs.wisc.edu/~remzi/OSTEP/file-implementation.pdf)
-- [ ] hw41 - [Fast File System](http://www.cs.wisc.edu/~remzi/OSTEP/file-ffs.pdf)
+- [x] hw41 - [Fast File System](http://www.cs.wisc.edu/~remzi/OSTEP/file-ffs.pdf)
 - [ ] [Crash Consistency and Journaling](http://www.cs.wisc.edu/~remzi/OSTEP/file-journaling.pdf)
 - [ ] [Log-Structured File Systems](http://www.cs.wisc.edu/~remzi/OSTEP/file-lfs.pdf)
 - [ ] [Solid-State Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf)

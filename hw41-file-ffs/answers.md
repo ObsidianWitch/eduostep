@@ -262,8 +262,90 @@ span: directories
 
 Reducing the number of inodes per group increases the dirspan of directories. File inodes that can't be allocated in the same group as their directory are allocated in the next group with free inodes. And the data blocks are placed in the same group as the file's inode (if possible). Thus it increases the distance between a directory inode and the farthest file data block.
 
-Q7. Which group should FFS place inode of a new directory in? The default (simulator) policy looks for the group with the most free inodes. A different policy looks for a set of groups with the most free inodes. For example, if you run with `-A 2`, when allocating a new directory, the simulator will look at groups in pairs and pick the best pair for the allocation. Run `./ffs.py -f in.manyfiles -I 5 -A 2 -c` to see how allocation changes with this strategy. How does it affect dirspan? Why might this policy be good?
+Q7. Which group should FFS place inode of a new directory in? The default (simulator) policy looks for the group with the most free inodes. A different policy looks for a set of groups with the most free inodes. For example, if you run with `-A 2`, when allocating a new directory, the simulator will look at groups in pairs and pick the best pair for the allocation. Run `./ffs.py -f in.manyfiles -i 5 -A 2 -c` to see how allocation changes with this strategy. How does it affect dirspan? Why might this policy be good?
+
+It decreases the dirspan of `/j` and `/t`. Doing this allows multiple **adjacent** groups to be "reserved" for the files of a directory. In our case it allows `/j` to have files allocated in groups 2 and 3 (groupspan=1) (instead of 2, 4 and 5; groupspan=3) and `t` in groups 4 and 5 (groupspan=1) (instead of 3, 4 and 5; groupspan=2).
 
 Q8. One last policy change we will explore relates to file fragmentation. Run `./ffs.py -f in.fragmented -v` and see if you can predict how the files that remain are allocated. Run with `-c` to confirm your answer. What is interesting about the data layout of file `/i`? Why is it problematic?
 
+```
+$ ./ffs.py -f in.fragmented
+[...]
+group inodes    data
+    0 /ib-d-f-h- /ibidifihi iii------- ----------
+[...]
+```
+
+The data blocks of file `/i` are fragmented. I/O operations to this file will be slower compared to a contiguously allocated file.
+
 Q9. A new policy, which we call contiguous allocation (`-C`), tries to ensure that each file is allocated contiguously. Specifically, with `-C n`, the file system tries to ensure that n contiguous blocks are free within a group before allocating a block. Run `./ffs.py -f in.fragmented -v -C 2 -c` to see the difference. How does layout change as the parameter passed to `-C` increases? Finally, how does `-C` affect filespan and dirspan?
+
+```
+$ ./ffs.py -f in.fragmented -C 1 -Tc
+[...]
+span: files
+  file:         /b  filespan:  10
+  file:         /d  filespan:  10
+  file:         /f  filespan:  10
+  file:         /h  filespan:  10
+  file:         /i  filespan:  21
+               avg  filespan:  12.20
+
+span: directories
+  dir:           /  dirspan:  22
+               avg  dirspan:  22.00
+
+$ ./ffs.py -f in.fragmented -C 2 -Tc
+[...]
+group inodes    data
+    0 /ib-d-f-h- /-b-d-f-hi iiiiiii--- ----------
+[...]
+span: files
+  file:         /b  filespan:  10
+  file:         /d  filespan:  10
+  file:         /f  filespan:  10
+  file:         /h  filespan:  10
+  file:         /i  filespan:  25
+               avg  filespan:  13.00
+
+span: directories
+  dir:           /  dirspan:  26
+               avg  dirspan:  26.00
+```
+
+`/i` is now contiguously allocated. In this specific example, filespan and dirspan increase. But the cost is amortized if small files (1 block) are allocated after (see example below), then the average filespan decreases and the average dirspan stays the same for more allocated files.
+
+```sh
+$ cat in.fragmented - <<< 'file /j 1
+file /k 1
+file /l 1
+file /m 1' | ./ffs.py -f '/dev/stdin' -C 2 -Tc
+# [...]
+# group inodes    data
+#     0 /ibjdkflhm /jbkdlfmhi iiiiiii--- ----------
+#     1 ---------- ---------- ---------- ----------
+#     2 ---------- ---------- ---------- ----------
+#     3 ---------- ---------- ---------- ----------
+#     4 ---------- ---------- ---------- ----------
+#     5 ---------- ---------- ---------- ----------
+#     6 ---------- ---------- ---------- ----------
+#     7 ---------- ---------- ---------- ----------
+#     8 ---------- ---------- ---------- ----------
+#     9 ---------- ---------- ---------- ----------
+#
+# span: files
+#   file:         /b  filespan:  10
+#   file:         /d  filespan:  10
+#   file:         /f  filespan:  10
+#   file:         /h  filespan:  10
+#   file:         /i  filespan:  25
+#   file:         /j  filespan:   8
+#   file:         /k  filespan:   8
+#   file:         /l  filespan:   8
+#   file:         /m  filespan:   8
+#                avg  filespan:  10.78
+#
+# span: directories
+#   dir:           /  dirspan:  26
+#                avg  dirspan:  26.00
+```
