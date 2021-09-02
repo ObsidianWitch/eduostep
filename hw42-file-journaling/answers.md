@@ -70,6 +70,10 @@ Q4. Change the seed to `-S 5`; which inconsistency do you see? How hard would it
 
 Q5. Change the seed to `-S 6` or `-S 13`; which inconsistency do you see? Use `-c` to check your answer. What is the difference across these two cases? What should the repair tool do when encountering such a situation?
 
+* `-S 6`: `inode[12]` (directory) is allocated but isn't indicated as used in the inode bitmap, doesn't have an associated data block which is inconsistent for a directory, and isn't referenced by any directory even though its `refcount=1`.
+* `-S 13`: `inode[10]` (file) is allocated but isn't indicated as used in the inode bitmap, and isn't referenced by any directory even though its `refcount=1`.
+* In both cases there's no data associated with these inodes so it should be safe to delete them directly. If these inodes had data associated with them we could have set their bit to 1 in the inode bitmap and referenced them in the `lost+found` directory.
+
 Q6. Change the seed to `-S 9`; which inconsistency do you see? Use `-c` to check your answer. Which piece of information should a check-and-repair tool trust in this case?
 
 Q7. Change the seed to `-S 15`; which inconsistency do you see? Use `-c` to check your answer. What can a repair tool do in this case? If no repair is possible, how much data is lost?
