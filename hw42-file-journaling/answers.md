@@ -76,7 +76,11 @@ Q5. Change the seed to `-S 6` or `-S 13`; which inconsistency do you see? Use `-
 
 Q6. Change the seed to `-S 9`; which inconsistency do you see? Use `-c` to check your answer. Which piece of information should a check-and-repair tool trust in this case?
 
+`inode[13]` describes a directory with no associated data block, which is inconsistent. Moreover two entries in directory content `data[0]` refer to this inode (`(m,13)` and `(z,13)`) which shouldn't be possible for a directory either. By using `-c` we can see `inode[13]` was a file and not a directory before corruption. A repair tool wouldn't have this knowledge though. With these 2 evidences the repair tool could assume that the inode type of `inode[13]` was corrupted and switch it. But in a more generic case were the file was only referenced once, the fs wouldn't be able to know if the inode type or the address was corrupted.
+
 Q7. Change the seed to `-S 15`; which inconsistency do you see? Use `-c` to check your answer. What can a repair tool do in this case? If no repair is possible, how much data is lost?
+
+`inode[0]` is a file but multiple entries in the data blocks of some directories identify it as a directory by virtue of being special entries (`.` and `..`). Moreover, `data[0]` the data block of `inode[0]` follows the format of a directory data block. Also, `data[0]` contains `(.,0)` and `(..,0)` with the same inode which identify this directory as the root. Finally, the root's inode should be hard coded or stored in the FS super block. With all these evidences the repair tool should be able to restore the correct type to `inode[0]`. However if we imagine a scenario where the tool cannot repair the inode, then the root directory will be lost. If the FS is able to create a new root, all the orphaned directories and files could be moved under temporary names in a `/lost+found` directory.
 
 Q8. Change the seed to `-S 10`; which inconsistency do you see? Use `-c` to check your answer. Is there redundancy in the file system structure here that can help a repair?
 
