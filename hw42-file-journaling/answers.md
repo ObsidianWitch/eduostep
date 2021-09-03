@@ -47,4 +47,6 @@ There is an inconsistency between `inode_bitmap[13]` and `inodes[13]`, the inode
 
 **Q8**. Change the seed to `-S 10`; which inconsistency do you see? Use `-c` to check your answer. Is there redundancy in the file system structure here that can help a repair?
 
+The directory data inside `data[12]` corresponding to `inode[4]` has a corrupted parent directory (`(..,3)`) entry. `inodes[3]` is not allocated. The repair tool can iterate over the hierarchy to find the parent directory and restore the correct inode number. In our case entry `(w,4)` references `inode[4]` and can be found in `data[0]` corresponding to `inode[0]` (root). So, entry `(..,3)` should be restored to `(..,0)`.
+
 **Q9**. Change the seed to `-S 16` and `-S 20`; which inconsistency do you see? Use `-c` to check your answer. How should the repair tool fix the problem?
