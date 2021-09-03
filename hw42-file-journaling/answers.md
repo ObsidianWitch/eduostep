@@ -19,7 +19,7 @@ data         [(.,0) (..,0) (g,8) (w,4) (m,13) (z,13)] [] [] [] [] [] [(.,8) (..,
 
 There is an inconsistency between `inode_bitmap[13]` and `inodes[13]`, the inode is allocated but the inode bitmap indicates the inode is free. It can be fixed by setting the corresponding inode bitmap bit to 1 (`1000100010000101`).
 
-**Q3**. Change the seed to `-S 3` or `-S 19`; which inconsistency do you see? Use `-c` to check your answer. What is different in these two cases?
+**Q3**. Change the seed to `-S 3` and `-S 19`; which inconsistency do you see? Use `-c` to check your answer. What is different in these two cases?
 
 * `-S 3`: `inodes[15]` has a `refcnt=2` when in reality it is referenced only once in the data blocks (`(s,15)`). The `refcnt` should be decremented to fix the inconsistency.
 * `S 9`: `inodes[8]` has an incorrect `refcnt` of 1 instead of 2. All directories are at least referenced twice: by themselves and by their parent. The `refcnt` should be incremented to fix the inconsistency.
@@ -31,7 +31,7 @@ There is an inconsistency between `inode_bitmap[13]` and `inodes[13]`, the inode
 * `-S 38`: entry `(..,0)` of `data[12]` changed to `(b,0)`. Since the directory lacks a `..` entry we don't know its parent anymore, we need to find that out first by iterating over every directories and check if the inode of our corrupted directory is referenced in an entry. Assuming no other problem has happened in the FS and hard links to directories are disallowed, one unique entry will be found. Once we have the parent we can add the missing `..` entry. Then the `fsck` could notice entry `(b,0)` is weird since it doesn't have a special name (`.` or `..`) and it references a directory higher in the hierarchy. Thus it would make this entry a hard link to a directory, which shouldn't be allowed by the FS, and it should be deleted. **Note**: I broke the fix into 2 steps because I intuited it could be risky to directly make assumptions about `(b,0)` being the missing and corrupted `(..,0)` entry in a real case scenario.
 * `-S 642`: entry `(g,8)` of `data[0]` changed to `(w,8)`. The problem is detectable in this case because we have 2 entries (`(w,4)` and `(w,8)`) with the same name to 2 different directories. Without a log we can't retrieve the old directory name, but we can rename one of the two entries to differentiate them (e.g. by appending a number at the end).
 
-**Q5**. Change the seed to `-S 6` or `-S 13`; which inconsistency do you see? Use `-c` to check your answer. What is the difference across these two cases? What should the repair tool do when encountering such a situation?
+**Q5**. Change the seed to `-S 6` and `-S 13`; which inconsistency do you see? Use `-c` to check your answer. What is the difference across these two cases? What should the repair tool do when encountering such a situation?
 
 * `-S 6`: `inode[12]` (directory) is allocated but isn't used in the inode bitmap, doesn't have an associated data block which is inconsistent for a directory, and isn't referenced by any directory (orphaned) even though its `refcount=1`.
 * `-S 13`: `inode[10]` (file) is allocated but isn't indicated as used in the inode bitmap, and isn't referenced by any directory (orphaned) even though its `refcount=1`.
@@ -50,3 +50,7 @@ There is an inconsistency between `inode_bitmap[13]` and `inodes[13]`, the inode
 The directory data inside `data[12]` corresponding to `inode[4]` has a corrupted parent directory (`(..,3)`) entry. `inodes[3]` is not allocated. The repair tool can iterate over the hierarchy to find the parent directory and restore the correct inode number. In our case entry `(w,4)` references `inode[4]` and can be found in `data[0]` corresponding to `inode[0]` (root). So, entry `(..,3)` should be restored to `(..,0)`.
 
 **Q9**. Change the seed to `-S 16` and `-S 20`; which inconsistency do you see? Use `-c` to check your answer. How should the repair tool fix the problem?
+
+* `-S 16`: `inode[13]` points to unallocated `data[7]`. With `-c` we can see the inode originally pointed to `-1`.
+* `-S 20`: `inode[8]` points to unallocated `data[11]`. With `-c` we can see the inode originally pointed to `data[6]`.
+* In both cases the inodes should point to `-1`, because the repair tool cannot possibly know with certainty which data blocks were originally referenced without some kind of redundancy or log. In the second case we now have an orphaned data blocks corresponding to a directory. We can delete it, leading to orphaned inodes which could be referenced again in `/lost+found`. Trying to reference the orphaned data block(s) again seem non-trivial in a real world situation case where inodes can have multiple data pointers.
