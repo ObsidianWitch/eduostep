@@ -1,20 +1,52 @@
 # Simulation
 
-**Q1**. First just run `checksum.py` with no arguments. Compute the additive, XOR-based, and Fletcher checksums. Use `-c` to check your answers.
+~~**Q1**. First just run `checksum.py` with no arguments. Compute the additive, XOR-based, and Fletcher checksums. Use `-c` to check your answers.~~
 
-**Q2**. Now do the same, but vary the seed (`-s`) to different values.
+~~**Q2**. Now do the same, but vary the seed (`-s`) to different values.~~
 
 **Q3**. Sometimes the additive and XOR-based checksums produce the same checksum (e.g., if the data value is all zeroes). Can you pass in a 4-byte data value (using the `-D` flag, e.g., `-D` a,b,c,d) that does not contain only zeroes and leads the additive and XOR-based checksum having the same value? In general, when does this occur? Check that you are correct with the `-c` flag.
 
-**Q4**. Now pass in a 4-byte value that you know will produce a different checksum values for additive and XOR. In general, when does this occur?
+```
+$ ./checksum.py -D 0,1,2,4 -c
+$ ./checksum.py -D 1,2,4,8 -c
+$ ./checksum.py -D 16,32,2,64 -c
+```
+
+Four different multiples of 2 produce the same additive and xor-based checksums. The bytes don't have overlapping 1s so there's no carry during the binary addition. Thus, in this case, the addition is equivalent to a bitwise XOR.
+
+~~**Q4**. Now pass in a 4-byte value that you know will produce a different checksum values for additive and XOR. In general, when does this occur?~~
 
 **Q5**. Use the simulator to compute checksums twice (once each for a different set of numbers). The two number strings should be different (e.g., `-D a1,b1,c1,d1` the first time and `-D a2,b2,c2,d2` the second) but should produce the same additive checksum. In general, when will the additive checksum be the same, even though the data values are different? Check your specific answer with the `-c` flag.
 
+```
+$ ./checksum.py -D 2,3,7,4 -c
+$ ./checksum.py -D 2,3,4,7 -c
+$ ./checksum.py -D 1,3,5,7 -c
+```
+
+The additive checksum produce the same value for reordered bytes and for bytes producing the same final sum.
+
 **Q6**. Now do the same for the XOR checksum.
+
+```
+$ ./checksum.py -D 2,3,7,4 -c
+$ ./checksum.py -D 2,3,4,7 -c
+```
+
+The XOR-based checksum is also order insensitive.
 
 **Q7**. Now let’s look at a specific set of data values. The first is: `-D 1,2,3,4`. What will the different checksums (additive, XOR, Fletcher) be for this data? Now compare it to computing these checksums over `-D 4,3,2,1`. What do you notice about these three checksums? How does Fletcher compare to the other two? How is Fletcher generally “better” than something like the simple additive checksum?
 
+The Fletcher checksum is order sensitive. Less collisions will happen compared to the simple additive and XOR checksums.
+
 **Q8**. No checksum is perfect. Given a particular input of your choosing, can you find other data values that lead to the same Fletcher checksum? When, in general, does this occur? Start with a simple data string (e.g., `-D 0,1,2,3`) and see if you can replace one of those numbers but end up with the same Fletcher checksum. As always, use `-c` to check your answers.
+
+```
+$ ./checksum.py -D 0,1,2,3 -c
+$ ./checksum.py -D 255,1,2,3 -c
+```
+
+The Fletcher checksum cannot differentiate between `0x00` and `0xFF` bytes in the same position.
 
 # Code
 
