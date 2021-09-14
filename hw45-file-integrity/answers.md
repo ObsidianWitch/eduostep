@@ -46,13 +46,27 @@ $ ./checksum.py -D 0,1,2,3 -c
 $ ./checksum.py -D 255,1,2,3 -c
 ```
 
-The Fletcher checksum cannot differentiate between `0x00` and `0xFF` bytes in the same position.
+The Fletcher checksum cannot differentiate between `0x00` and `0xFF` bytes at the same position.
 
 # Code
 
 **Q1**. Write a short C program (called `check-xor.c`) that computes an XOR-based checksum over an input file, and prints the checksum as output. Use a 8-bit unsigned char to store the (one byte) checksum. Make some test files to see if it works as expected.
 
+```
+$ cargo test
+[...]
+$ cago run --bin=check-xor manual.md
+xor8sum 3 0x03 0b00000011
+```
+
 **Q2**. Now write a short C program (called `check-fletcher.c`) that computes the Fletcher checksum over an input file. Once again, test your program to see if it works.
+
+```
+$ cargo test
+[...]
+$ cago run --bin=check-fletcher manual.md
+fletcher8sum 26,183 0x1a,0xb7 0b00011010,0b10110111
+```
 
 **Q3**. Now compare the performance of both: is one faster than the other? How does performance change as the size of the input file changes? Use internal calls to `gettimeofday` to time the programs. Which should you use if you care about performance? About checking ability?
 
