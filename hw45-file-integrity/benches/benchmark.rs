@@ -1,5 +1,3 @@
-use std::io::{prelude::*, BufReader};
-use std::fs::File;
 use std::path::Path;
 use std::process::Command;
 use criterion::{Criterion, criterion_group, criterion_main};
@@ -15,20 +13,17 @@ fn openssl_rand(size_exp: u32) -> String {
     return outpath;
 }
 
-
 fn checksum_rand(c: &mut Criterion) {
-    for size_exp in (10..=30).step_by(5) {
-        // initialize target/rand_* test files
+    for size_exp in (2..=20).step_by(2) {
+        // initialize and open target/rand_* test files
         let filepath = openssl_rand(size_exp);
-        let file = File::open(&filepath).unwrap();
-        let mut reader = BufReader::new(file);
+        let data = std::fs::read(&filepath).unwrap();
 
         // benchmark checksum functions
         c.bench_function( &format!("xor8sum {}", &filepath),
-                          |b| b.iter(|| xor8sum(&mut reader)) );
-        reader.rewind().unwrap();
+                          |b| b.iter(|| xor8sum(&data)) );
         c.bench_function( &format!("fletcher8sum {}", &filepath),
-                          |b| b.iter(|| fletcher8sum(&mut reader)) );
+                          |b| b.iter(|| fletcher8sum(&data)) );
     }
 }
 
