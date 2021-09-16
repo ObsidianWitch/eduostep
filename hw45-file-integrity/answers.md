@@ -55,7 +55,7 @@ The Fletcher checksum cannot differentiate between `0x00` and `0xFF` bytes at th
 ```
 $ cargo test
 [...]
-$ cago run --bin=check-xor manual.md
+$ cargo run --bin=check-xor manual.md
 xor8sum 3 0x03 0b00000011
 ```
 
@@ -64,12 +64,28 @@ xor8sum 3 0x03 0b00000011
 ```
 $ cargo test
 [...]
-$ cago run --bin=check-fletcher manual.md
+$ cargo run --bin=check-fletcher manual.md
 fletcher8sum 26,183 0x1a,0xb7 0b00011010,0b10110111
 ```
 
-**Q3**. Now compare the performance of both: is one faster than the other? How does performance change as the size of the input file changes? Use internal calls to `gettimeofday` to time the programs. Which should you use if you care about performance? About checking ability?
+**Q4**. Read about the 16-bit CRC and then implement it. Test it on a number of different inputs to ensure that it works.
 
-**Q4**. Read about the 16-bit CRC and then implement it. Test it on a number of different inputs to ensure that it works. How is its performance as compared to the simple XOR and Fletcher? How about its checking ability?
+```
+$ cargo test
+[...]
+$ cargo run --bin=check-crc manual.md
+crc16sum 55953 0xda91 0b1101101010010001
+```
+
+**Q3mod**. Now compare the performance of the three: is one faster? How does performance change as the size of the input file changes? Use internal calls to `gettimeofday` to time the programs. Which should you use if you care about performance? About checking ability?
+
+```
+$ time cargo criterion --message-format=json > benches/benchmark.json
+$ ./plot.py benches/benchmark.json > benches/benchmark.png
+```
+
+![plot checksum functions, x:file size (KiB), y: time (ms)](benches/benchmark.png)
+
+`xor8sum` is faster than `fletcher8sum` which is faster than `crc16sum`. Please note that all three implementations are naive. The XOR checksum is less reliable (more collisions) than Fletcher's checksum because it fails to detect reordered bytes. CRC is more reliable than both. All three are weak to collision attacks compared to cryptographic hash functions, but they are faster.
 
 **Q5**. Now build a tool (`create-csum.c`) that computes a single-byte checksum for every 4KB block of a file, and records the results in an output file (specified on the command line). Build a related tool (`check-csum.c`) that reads a file, computes the checksums over each block, and compares the results to the stored checksums stored in another file. If there is a problem, the program should print that the file has been corrupted. Test the program by manually corrupting the file.

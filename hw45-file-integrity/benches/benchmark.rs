@@ -3,20 +3,20 @@ use std::process::Command;
 use criterion::{Criterion, criterion_group, criterion_main};
 use hw45::{xor8sum, fletcher8sum, crc16sum};
 
-fn openssl_rand(size_exp: u32) -> String {
-    let outpath = format!("target/rand_{}", size_exp);
+fn openssl_rand(size_kib: u32) -> String {
+    let outpath = format!("target/rand_{}", size_kib);
     if !Path::new(&outpath).exists() {
         Command::new("openssl")
-            .args(["rand", "-out", &outpath, &2u32.pow(size_exp).to_string()])
+            .args(["rand", "-out", &outpath, &(1024 * size_kib).to_string()])
             .status().unwrap();
     }
     return outpath;
 }
 
 fn checksum_rand(c: &mut Criterion) {
-    for size_exp in (2..=20).step_by(2) {
+    for size_kib in (128..=1024).step_by(128) {
         // initialize and open target/rand_* test files
-        let filepath = openssl_rand(size_exp);
+        let filepath = openssl_rand(size_kib);
         let data = std::fs::read(&filepath).unwrap();
 
         // benchmark checksum functions
