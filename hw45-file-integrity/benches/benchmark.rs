@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::process::Command;
 use criterion::{Criterion, criterion_group, criterion_main};
-use hw45::{xor8sum, fletcher8sum};
+use hw45::{xor8sum, fletcher8sum, crc16sum};
 
 fn openssl_rand(size_exp: u32) -> String {
     let outpath = format!("target/rand_{}", size_exp);
@@ -24,6 +24,8 @@ fn checksum_rand(c: &mut Criterion) {
                           |b| b.iter(|| xor8sum(&data)) );
         c.bench_function( &format!("fletcher8sum {}", &filepath),
                           |b| b.iter(|| fletcher8sum(&data)) );
+        c.bench_function( &format!("crc16sum {}", &filepath),
+                          |b| b.iter(|| crc16sum(&data)) );
     }
 }
 
