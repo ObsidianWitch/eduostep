@@ -24,6 +24,7 @@ for i, (name, results) in enumerate(data.items()):
     axis.plot(results.keys(), results.values(), marker='.', \
         linestyle=(0, (1, i)), label=name)
 axis.legend()
+axis.set_xticks(tuple(tuple(data.values())[0].keys()))
 axis.set_xlabel("Input File Size (KiB)")
 axis.set_ylabel("Time (ms)")
 axis.grid()
