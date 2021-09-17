@@ -43,7 +43,7 @@
 - [x] hw42 - [Crash Consistency and Journaling](http://www.cs.wisc.edu/~remzi/OSTEP/file-journaling.pdf)
 - [ ] [Log-Structured File Systems](http://www.cs.wisc.edu/~remzi/OSTEP/file-lfs.pdf)
 - [ ] [Solid-State Disk Drives](http://www.cs.wisc.edu/~remzi/OSTEP/file-ssd.pdf)
-- [ ] hw45 [Data Integrity](http://www.cs.wisc.edu/~remzi/OSTEP/file-integrity.pdf)
+- [x] hw45 [Data Integrity](http://www.cs.wisc.edu/~remzi/OSTEP/file-integrity.pdf)
 - [ ] [Distributed Intro](http://www.cs.wisc.edu/~remzi/OSTEP/dist-intro.pdf)
 - [ ] [NFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-nfs.pdf)
 - [ ] [AFS](http://www.cs.wisc.edu/~remzi/OSTEP/dist-afs.pdf)

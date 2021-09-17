@@ -89,3 +89,20 @@ $ ./plot.py benches/benchmark.json > benches/benchmark.png
 `xor8sum` is faster than `fletcher8sum` which is faster than `crc16sum`. Please note that all three implementations are naive. The XOR checksum is less reliable (more collisions) than Fletcher's checksum because it fails to detect reordered bytes. CRC is more reliable than both. All three are weak to collision attacks compared to cryptographic hash functions, but they are faster.
 
 **Q5**. Now build a tool (`create-csum.c`) that computes a single-byte checksum for every 4KB block of a file, and records the results in an output file (specified on the command line). Build a related tool (`check-csum.c`) that reads a file, computes the checksums over each block, and compares the results to the stored checksums stored in another file. If there is a problem, the program should print that the file has been corrupted. Test the program by manually corrupting the file.
+
+```sh
+$ cargo run --bin check-block -- create target/rand_20 target/checksums
+# Finished dev [unoptimized + debuginfo] target(s) in 0.07s
+#  Running `target/debug/check-block create target/rand_20 target/checksums`
+
+$ cargo run --bin check-block -- check target/rand_20 target/checksums
+# Finished dev [unoptimized + debuginfo] target(s) in 0.06s
+#  Running `target/debug/check-block check target/rand_20 target/checksums`
+
+$ echo a > target/checksums
+$ cargo run --bin check-block -- check target/rand_20 target/checksums
+#     Finished dev [unoptimized + debuginfo] target(s) in 0.06s
+#      Running `target/debug/check-block check target/rand_20 target/checksums`
+# thread 'main' panicked at 'assertion failed: computed_checksums == saved_checksums', src/bin/check-block.rs:14:5
+# note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+```
